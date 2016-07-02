@@ -1,0 +1,13 @@
+# Visual Studio
+.suo
+.DotSettings
+
+bin
+obj
+
+.vs
+
+project.lock.json
+
+# Node
+node_modules
