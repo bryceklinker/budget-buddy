@@ -1,6 +1,6 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
+using BudgetBuddy.Api.Bootstrap;
 using BudgetBuddy.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
@@ -14,7 +14,7 @@ namespace BudgetBuddy.Infrastructure.Test.Configuration
 
         public ConfiguratorLoaderTest()
         {
-            var assembly = typeof(ConfiguratorLoaderTest).GetTypeInfo().Assembly;
+            var assembly = typeof(ConfiguratorFake).GetTypeInfo().Assembly;
             _configuratorLoader = new ConfiguratorLoader(assembly);
         }
 
@@ -24,15 +24,22 @@ namespace BudgetBuddy.Infrastructure.Test.Configuration
             var builder = new ConfigurationBuilder();
 
             _configuratorLoader.Configure(builder);
-            Assert.Equal("fakeconfig.json", ((JsonConfigurationSource)builder.Sources.First()).Path);
+            Assert.True(ConfiguratorFake.IsConfigured);
         }
     }
 
     public class ConfiguratorFake : IConfigurator
     {
+        public static bool IsConfigured { get; private set; }
+
+        public ConfiguratorFake()
+        {
+            IsConfigured = false;
+        }
+
         public void Configure(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Configuration", "fakeconfig.json"));
+            IsConfigured = true;
         }
     }
 }
