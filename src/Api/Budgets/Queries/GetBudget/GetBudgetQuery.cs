@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Model;
 using BudgetBuddy.Api.Budgets.Queries.GetBudget.ViewModels;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 
 namespace BudgetBuddy.Api.Budgets.Queries.GetBudget
 {
@@ -10,6 +11,7 @@ namespace BudgetBuddy.Api.Budgets.Queries.GetBudget
         Task<BudgetViewModel> Execute(int month, int year);
     }
 
+    [Transient(typeof(IGetBudgetQuery))]
     public class GetBudgetQuery : IGetBudgetQuery
     {
         private readonly BudgetContext _budgetContext;

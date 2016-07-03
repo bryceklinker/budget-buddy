@@ -14,7 +14,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Configuration
             var builder = new ConfigurationBuilder();
 
             new BudgetsConfigurator().Configure(builder);
-            Assert.Equal("budgets.config", ((JsonConfigurationSource) builder.Sources.First()).Path);
+            Assert.Equal("budgets.json", ((JsonConfigurationSource) builder.Sources.First()).Path);
         }
     }
 }

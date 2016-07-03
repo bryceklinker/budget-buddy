@@ -6,6 +6,8 @@ using BudgetBuddy.Api.Budgets.Model;
 using BudgetBuddy.Api.Budgets.Model.Entities;
 using BudgetBuddy.Api.Budgets.Queries.GetBudget;
 using BudgetBuddy.Api.Budgets.Queries.GetBudget.ViewModels;
+using BudgetBuddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
 using Xunit;
 
@@ -102,6 +104,13 @@ namespace BudgetBuddy.Api.Test.Budgets.Queries.GetBudget
         {
             var viewModel = await _getBudgetQuery.Execute(4, 2016);
             Assert.Null(viewModel);
+        }
+
+        [Fact]
+        public void Query_ShouldBeTransient()
+        {
+            var registration = _getBudgetQuery.GetAttribute<TransientAttribute>();
+            Assert.IsType<TransientAttribute>(registration);
         }
 
         private Task<BudgetViewModel> Execute()

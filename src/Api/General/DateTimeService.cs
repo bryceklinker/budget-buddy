@@ -1,4 +1,5 @@
-﻿using BudgetBuddy.Infrastructure.DependencyInjection;
+﻿using System;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 
 namespace BudgetBuddy.Api.General
 {
@@ -11,7 +12,7 @@ namespace BudgetBuddy.Api.General
     [Singleton(typeof(IDateTimeService))]
     public class DateTimeService : IDateTimeService
     {
-        public int CurrentMonth { get; }
-        public int CurrentYear { get; }
+        public int CurrentMonth => DateTime.Now.Month;
+        public int CurrentYear => DateTime.Now.Year;
     }
 }

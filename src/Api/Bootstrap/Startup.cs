@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
+using BudgetBuddy.Api.Budgets.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +38,7 @@ namespace BudgetBuddy.Api.Bootstrap
             services.AddSingleton(typeof(IConfiguration), Configuration)
                 .AddEntityFramework()
                 .AddEntityFrameworkSqlServer()
+                .AddDbContext<BudgetContext>(o => o.UseSqlServer(Configuration["Budgets:ConnectionString"]))
                 .AddMvc();
             _dependencyRegistrar.Register(services);
         }
