@@ -5,7 +5,7 @@ Write-Host $testDirectories;
 
 $hasError = $false;
 foreach ($testDirectory in $testDirectories) {
-	dotnet test $testDirectory
+	dotnet test $testDirectory.FullName
 	if ($LASTEXITCODE -ne 0) {
 		$hasError = $true;
 	}
