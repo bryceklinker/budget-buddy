@@ -12,7 +12,7 @@ foreach ($testDirectory in $testDirectories) {
 		$hasError = $true;
 	}
 }
-Set-Location "";
+Set-Location "../..";
 
 if ($hasError) {
 	exit 1;
