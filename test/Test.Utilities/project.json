@@ -2,10 +2,12 @@
   "version": "1.0.0-*",
 
   "dependencies": {
+    "Api":  "1.0.0-*", 
     "Infrastructure": "1.0.0-*",
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0",
-    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0", 
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",  
+    "Microsoft.AspNetCore.Hosting.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.EntityFrameworkCore.InMemory": "1.0.0", 
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"

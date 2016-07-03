@@ -1,12 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using Budget.Buddy.Infrastructure.Configuration;
+using BudgetBuddy.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Xunit;
 
-namespace Budget.Buddy.Infrastructure.Test.Configuration
+namespace BudgetBuddy.Infrastructure.Test.Configuration
 {
     public class ConfiguratorLoaderTest
     {

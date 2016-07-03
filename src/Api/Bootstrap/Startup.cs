@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using Budget.Buddy.Infrastructure.Configuration;
-using Budget.Buddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Infrastructure.Configuration;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Budget.Buddy.Api.Bootstrap
+namespace BudgetBuddy.Api.Bootstrap
 {
     public class Startup
     {
@@ -43,14 +43,8 @@ namespace Budget.Buddy.Api.Bootstrap
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseCors(c =>
-            {
-                c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            })
-                .UseIdentity()
-                .UseGoogleAuthentication(new GoogleOptions
                 {
-                    ClientId = Configuration["GoogleAuth:ClientId"],
-                    ClientSecret = Configuration["GoogleAuth:ClientSecret"]
+                    c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 })
                 .UseMvc();
         }

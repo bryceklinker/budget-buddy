@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Budget.Buddy.Infrastructure.DependencyInjection
+namespace BudgetBuddy.Infrastructure.DependencyInjection
 {
     public interface IDependencyRegistrar
     {

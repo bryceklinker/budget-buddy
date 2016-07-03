@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Budget.Buddy.Infrastructure.DependencyInjection
+namespace BudgetBuddy.Infrastructure.DependencyInjection
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class TransientAttribute : RegistrationAttribute

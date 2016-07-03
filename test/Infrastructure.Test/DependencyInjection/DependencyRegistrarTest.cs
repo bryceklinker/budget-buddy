@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Budget.Buddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Budget.Buddy.Infrastructure.Test.DependencyInjection
+namespace BudgetBuddy.Infrastructure.Test.DependencyInjection
 {
     public class DependencyRegistrarTest
     {

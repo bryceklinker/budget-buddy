@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 
-namespace Budget.Buddy.Infrastructure.Configuration
+namespace BudgetBuddy.Infrastructure.Configuration
 {
     public interface IConfiguratorLoader
     {

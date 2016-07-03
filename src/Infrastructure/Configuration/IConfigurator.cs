@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Budget.Buddy.Infrastructure.Configuration
+namespace BudgetBuddy.Infrastructure.Configuration
 {
     public interface IConfigurator
     {

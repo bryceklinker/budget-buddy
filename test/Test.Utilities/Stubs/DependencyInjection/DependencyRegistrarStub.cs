@@ -1,7 +1,7 @@
-﻿using Budget.Buddy.Infrastructure.DependencyInjection;
+﻿using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Budget.Buddy.Test.Utilities.Stubs.DependencyInjection
+namespace BudgetBuddy.Test.Utilities.Stubs.DependencyInjection
 {
     public class DependencyRegistrarStub : IDependencyRegistrar
     {

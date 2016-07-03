@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using Budget.Buddy.Api.Bootstrap;
+using BudgetBuddy.Api.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Budget.Buddy.Api
+namespace BudgetBuddy.Api
 {
     public class Program
     {
