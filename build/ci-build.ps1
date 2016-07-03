@@ -18,4 +18,4 @@ if ($hasError) {
 	exit 1;
 }
 
-dotnet publish src\Api\project.json;
+dotnet publish src\Api\project.json -c Release;
