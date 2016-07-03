@@ -1,6 +1,7 @@
 dotnet restore;
 
 $testDirectories = Get-ChildItem | ? { $_.PSIsContainer } | Select-Object FullName;
+Write-Host $testDirectories;
 
 $hasError = $false;
 foreach ($testDirectory in $testDirectories) {
