@@ -2,11 +2,11 @@ dotnet restore;
 
 $testDirectories = Get-ChildItem | ? { $_.PSIsContainer } | Select-Object FullName;
 
-$hasError = false;
+$hasError = False;
 foreach ($testDirectory in $testDirectories) {
 	dotnet test $testDirectory
 	if ($LASTEXITCODE -ne 0) {
-		$hasError = true;
+		$hasError = True;
 	}
 }
 
