@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using BudgetBuddy.Api.Budgets.Model;
+using BudgetBuddy.Core.Budgets.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Builder;

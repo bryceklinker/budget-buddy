@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets;
-using BudgetBuddy.Api.Budgets.Queries.GetBudget.ViewModels;
+using BudgetBuddy.Core.Budgets.ViewModels;
 using BudgetBuddy.Test.Utilities;
-using BudgetBuddy.Test.Utilities.Stubs.Budgets.Queries;
+using BudgetBuddy.Test.Utilities.Stubs.Budgets.AddBudget;
+using BudgetBuddy.Test.Utilities.Stubs.Budgets.GetBudget;
 using BudgetBuddy.Test.Utilities.Stubs.General;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -15,13 +16,15 @@ namespace BudgetBuddy.Api.Test.Budgets
         private readonly BudgetController _budgetController;
         private readonly DateTimeServiceStub _dateTimeServiceStub;
         private readonly GetBudgetQueryStub _getBudgetQueryStub;
+        private readonly AddBudgetCommandStub _addBudgetCommandStub;
 
         public BudgetControllerTest()
         {
             _dateTimeServiceStub = new DateTimeServiceStub();
             _getBudgetQueryStub = new GetBudgetQueryStub();
+            _addBudgetCommandStub = new AddBudgetCommandStub();
 
-            _budgetController = new BudgetController(_dateTimeServiceStub, _getBudgetQueryStub);
+            _budgetController = new BudgetController(_dateTimeServiceStub, _getBudgetQueryStub, _addBudgetCommandStub);
         }
 
         [Fact]
@@ -69,6 +72,15 @@ namespace BudgetBuddy.Api.Test.Budgets
         }
 
         [Fact]
+        public async Task AddBudget_ShouldReturnNewBudgetId()
+        {
+            var viewModel = new BudgetViewModel {Month = 4, Year = 2015};
+
+            var result = (CreatedResult)await _budgetController.AddBudget(viewModel);
+            AssertBudgetAdded(result, viewModel);
+        }
+
+        [Fact]
         public void Controller_ShouldSpecifyRoute()
         {
             var route = _budgetController.GetAttribute<RouteAttribute>();
@@ -87,6 +99,13 @@ namespace BudgetBuddy.Api.Test.Budgets
         {
             var httpGets = _budgetController.GetAttributes<HttpGetAttribute>("GetBudget");
             Assert.True(httpGets.Any(a => a.Template == "current"));
+        }
+
+        private void AssertBudgetAdded(CreatedResult result, BudgetViewModel viewModel)
+        {
+            Assert.Equal("~/budgets/4/2015", result.Location);
+            Assert.Equal(_addBudgetCommandStub.NewId, result.Value);
+            Assert.Same(viewModel, _addBudgetCommandStub.AddedBudget);
         }
     }
 }
