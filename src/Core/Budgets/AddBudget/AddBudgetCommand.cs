@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BudgetBuddy.Core.Budgets.Mappers;
 using BudgetBuddy.Core.Budgets.Model;
 using BudgetBuddy.Core.Budgets.Model.Entities;
 using BudgetBuddy.Core.Budgets.ViewModels;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Core.Budgets.AddBudget
@@ -14,13 +16,16 @@ namespace BudgetBuddy.Core.Budgets.AddBudget
         Task<Guid> Execute(BudgetViewModel budgetViewModel);
     }
 
+    [Transient(typeof(IAddBudgetCommand))]
     public class AddBudgetCommand : IAddBudgetCommand
     {
         private readonly BudgetContext _budgetContext;
+        private readonly BudgetMapper _budgetMapper;
 
         public AddBudgetCommand(BudgetContext budgetContext)
         {
             _budgetContext = budgetContext;
+            _budgetMapper = new BudgetMapper();
         }
 
         public async Task<Guid> Execute(BudgetViewModel budgetViewModel)
@@ -46,42 +51,9 @@ namespace BudgetBuddy.Core.Budgets.AddBudget
 
         private Budget CreateBudget(BudgetViewModel viewModel)
         {
-            return new Budget
-            {
-                Month = viewModel.Month,
-                Year = viewModel.Year,
-                LineItems = CreateLineItems(viewModel.Categories).ToList()
-            };
-        }
-
-        private IEnumerable<BudgetLineItem> CreateLineItems(IEnumerable<BudgetCategoryViewModel> categories)
-        {
-            return categories.SelectMany(CreateLineItems);
-        }
-
-        private IEnumerable<BudgetLineItem> CreateLineItems(BudgetCategoryViewModel category)
-        {
-            return category.LineItems.Select(l => CreateLineItem(l, category));
-        }
-
-        private BudgetLineItem CreateLineItem(BudgetLineItemViewModel lineItem, BudgetCategoryViewModel category)
-        {
-            return new BudgetLineItem
-            {
-                Actual = lineItem.Actual,
-                Estimate = lineItem.Estimate,
-                Name = lineItem.Name,
-                Category = CreateCategory(category)
-            };
-        }
-
-        private Category CreateCategory(BudgetCategoryViewModel category)
-        {
-            return new Category
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            var budget = new Budget {LineItems = new List<BudgetLineItem>()};
+            _budgetMapper.Map(viewModel, budget);
+            return budget;
         }
     }
 }

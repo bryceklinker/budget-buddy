@@ -34,6 +34,7 @@ namespace BudgetBuddy.Api.Budgets
             return Ok(budget);
         }
 
+        [HttpPost("")]
         public async Task<IActionResult> AddBudget(BudgetViewModel viewModel)
         {
             var newId = await _addBudgetCommand.Execute(viewModel);

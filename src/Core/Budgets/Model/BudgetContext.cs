@@ -18,9 +18,14 @@ namespace BudgetBuddy.Core.Budgets.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Budget>()
                 .HasAlternateKey(b => new {b.Year, b.Month})
                 .HasName("AK_Budget_Month_Year");
+
+            modelBuilder.Entity<Category>()
+                .HasAlternateKey(c => c.Name)
+                .HasName("AK_Category_Name");
 
             modelBuilder.Entity<BudgetLineItem>()
                 .HasOne(l => l.Category)

@@ -101,6 +101,13 @@ namespace BudgetBuddy.Api.Test.Budgets
             Assert.True(httpGets.Any(a => a.Template == "current"));
         }
 
+        [Fact]
+        public void AddBudget_ShouldAllowHttpPost()
+        {
+            var httpPost = _budgetController.GetAttribute<HttpPostAttribute>("AddBudget");
+            Assert.Equal("", httpPost.Template);
+        }
+
         private void AssertBudgetAdded(CreatedResult result, BudgetViewModel viewModel)
         {
             Assert.Equal("~/budgets/4/2015", result.Location);

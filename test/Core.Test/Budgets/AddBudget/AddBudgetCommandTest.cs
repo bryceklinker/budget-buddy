@@ -7,6 +7,9 @@ using BudgetBuddy.Core.Budgets.ViewModels;
 using BudgetBuddy.Test.Utilities.Factories;
 using Xunit;
 using System.Linq;
+using BudgetBuddy.Core.Test.Budgets.Asserts;
+using BudgetBuddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Test.Utilities;
 
 namespace BudgetBuddy.Core.Test.Budgets.AddBudget
 {
@@ -95,32 +98,17 @@ namespace BudgetBuddy.Core.Test.Budgets.AddBudget
             }
         }
 
+        [Fact]
+        public void AddBudgetCommand_ShouldBeTransient()
+        {
+            var registration = _addBudgetCommand.GetAttribute<TransientAttribute>();
+            Assert.IsType<TransientAttribute>(registration);
+        }
+
         private void AssertAddedBudget(BudgetViewModel viewModel, Guid budgetId)
         {
             var budget = _budgetContext.Budgets.Single(b => b.Id == budgetId);
-            Assert.Equal(viewModel.Month, budget.Month);
-            Assert.Equal(viewModel.Year, budget.Year);
-            Assert.Equal(viewModel.Categories.Length, budget.LineItems.GroupBy(l => l.Category.Id).Count());
-            foreach (var categoryViewModel in viewModel.Categories)
-                AssertBudgetLineItems(categoryViewModel, budget);
-        }
-
-        private void AssertBudgetLineItems(BudgetCategoryViewModel viewModel, Budget budget)
-        {
-            var categoryLineItems = budget.LineItems.Where(l => l.Category.Name == viewModel.Name).ToList();
-            Assert.Equal(viewModel.LineItems.Length, categoryLineItems.Count);
-            foreach (var lineItemViewModel in viewModel.LineItems)
-            {
-                var lineItem = categoryLineItems.Single(l => l.Name == lineItemViewModel.Name);
-                AssertBudgetLineItem(lineItemViewModel, lineItem);
-            }
-        }
-
-        private void AssertBudgetLineItem(BudgetLineItemViewModel viewModel, BudgetLineItem lineItem)
-        {
-            Assert.Equal(viewModel.Actual, lineItem.Actual);
-            Assert.Equal(viewModel.Estimate, lineItem.Estimate);
-            Assert.Equal(viewModel.Name, lineItem.Name);
+            BudgetAssert.Equal(viewModel, budget);
         }
     }
 }

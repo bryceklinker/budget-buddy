@@ -70,7 +70,7 @@ namespace BudgetBuddy.Core.Test.Budgets.GetBudget
         [Fact]
         public async Task Execute_ShouldGetLineItemsForCategory()
         {
-            var category = new Category();
+            var category = new Category {Name = "Jack"};
             _budget.LineItems.Add(new BudgetLineItem {Category = category, Name = "Home"});
             _budget.LineItems.Add(new BudgetLineItem {Category = category, Name = "misc"});
             _budget.LineItems.Add(new BudgetLineItem {Category = category, Name = "Bob"});
@@ -87,7 +87,7 @@ namespace BudgetBuddy.Core.Test.Budgets.GetBudget
             {
                 Actual = 34.13m,
                 Estimate = 43.123m,
-                Category = new Category(),
+                Category = new Category {Name = "Home"},
                 Id = Guid.NewGuid(),
                 Name = "good"
             };
