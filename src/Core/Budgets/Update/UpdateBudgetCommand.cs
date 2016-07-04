@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BudgetBuddy.Core.Budgets.Mappers;
 using BudgetBuddy.Core.Budgets.Model;
 using BudgetBuddy.Core.Budgets.ViewModels;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Core.Budgets.UpdateBudget
@@ -12,6 +13,7 @@ namespace BudgetBuddy.Core.Budgets.UpdateBudget
         Task Execute(BudgetViewModel budgetViewModel);
     }
 
+    [Transient(typeof(IUpdateBudgetCommand))]
     public class UpdateBudgetCommand : IUpdateBudgetCommand
     {
         private readonly BudgetContext _budgetContext;

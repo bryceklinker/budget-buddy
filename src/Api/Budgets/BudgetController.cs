@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BudgetBuddy.Core.Budgets.AddBudget;
+using BudgetBuddy.Core.Budgets.Exists;
 using BudgetBuddy.Core.Budgets.GetBudget;
+using BudgetBuddy.Core.Budgets.UpdateBudget;
 using BudgetBuddy.Core.Budgets.ViewModels;
 using BudgetBuddy.Core.General;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +16,16 @@ namespace BudgetBuddy.Api.Budgets
         private readonly IDateTimeService _dateTimeService;
         private readonly IGetBudgetQuery _getBudgetQuery;
         private readonly IAddBudgetCommand _addBudgetCommand;
+        private readonly IUpdateBudgetCommand _updateBudgetCommand;
+        private readonly IBudgetExistsQuery _budgetExistsQuery;
 
-        public BudgetController(IDateTimeService dateTimeService, IGetBudgetQuery getBudgetQuery, IAddBudgetCommand addBudgetCommand)
+        public BudgetController(IDateTimeService dateTimeService, IGetBudgetQuery getBudgetQuery, IAddBudgetCommand addBudgetCommand, IUpdateBudgetCommand updateBudgetCommand, IBudgetExistsQuery budgetExistsQuery)
         {
             _dateTimeService = dateTimeService;
             _getBudgetQuery = getBudgetQuery;
             _addBudgetCommand = addBudgetCommand;
+            _updateBudgetCommand = updateBudgetCommand;
+            _budgetExistsQuery = budgetExistsQuery;
         }
 
         [HttpGet("current")]
@@ -28,9 +34,12 @@ namespace BudgetBuddy.Api.Budgets
         {
             month = month ?? _dateTimeService.CurrentMonth;
             year = year ?? _dateTimeService.CurrentYear;
-            var budget = await _getBudgetQuery.Execute(month.Value, year.Value);
-            if (budget == null)
+
+            var exists = await _budgetExistsQuery.Execute(month.Value, year.Value);
+            if (!exists)
                 return NotFound();
+
+            var budget = await _getBudgetQuery.Execute(month.Value, year.Value);
             return Ok(budget);
         }
 
@@ -39,6 +48,17 @@ namespace BudgetBuddy.Api.Budgets
         {
             var newId = await _addBudgetCommand.Execute(viewModel);
             return Created($"~/budgets/{viewModel.Month}/{viewModel.Year}", newId);
+        }
+
+        [HttpPut("{month:int}/{year:int}")]
+        public async Task<IActionResult> UpdateBudget(int month, int year, BudgetViewModel viewModel)
+        {
+            var exists = await _budgetExistsQuery.Execute(month, year);
+            if (!exists)
+                return NotFound();
+
+            await _updateBudgetCommand.Execute(viewModel);
+            return Ok();
         }
     }
 }

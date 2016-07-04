@@ -7,6 +7,8 @@ using BudgetBuddy.Core.Budgets.Model.Entities;
 using BudgetBuddy.Core.Budgets.UpdateBudget;
 using BudgetBuddy.Core.Budgets.ViewModels;
 using BudgetBuddy.Core.Test.Budgets.Asserts;
+using BudgetBuddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
 using Xunit;
 
@@ -75,6 +77,13 @@ namespace BudgetBuddy.Core.Test.Budgets.UpdateBudget
             BudgetAssert.Equal(_budgetViewModel, _budget);
             Assert.Equal(1, _budgetContext.BudgetLineItems.Count());
             Assert.Equal(1, _budgetContext.Categories.Count());
+        }
+
+        [Fact]
+        public void UpdateBudgetCommand_ShouldBeTransient()
+        {
+            var transient = _updateBudgetCommand.GetAttribute<TransientAttribute>();
+            Assert.Equal(typeof(IUpdateBudgetCommand), transient.InterfaceType);
         }
     }
 }

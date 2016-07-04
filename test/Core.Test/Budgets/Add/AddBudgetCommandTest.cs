@@ -102,7 +102,7 @@ namespace BudgetBuddy.Core.Test.Budgets.AddBudget
         public void AddBudgetCommand_ShouldBeTransient()
         {
             var registration = _addBudgetCommand.GetAttribute<TransientAttribute>();
-            Assert.IsType<TransientAttribute>(registration);
+            Assert.Equal(typeof(IAddBudgetCommand), registration.InterfaceType);
         }
 
         private void AssertAddedBudget(BudgetViewModel viewModel, Guid budgetId)

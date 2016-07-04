@@ -109,7 +109,7 @@ namespace BudgetBuddy.Core.Test.Budgets.GetBudget
         public void Query_ShouldBeTransient()
         {
             var registration = _getBudgetQuery.GetAttribute<TransientAttribute>();
-            Assert.IsType<TransientAttribute>(registration);
+            Assert.Equal(typeof(IGetBudgetQuery), registration.InterfaceType);
         }
 
         private Task<BudgetViewModel> Execute()
