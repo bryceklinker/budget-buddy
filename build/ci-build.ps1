@@ -5,7 +5,7 @@ Write-Host $testDirectories;
 
 $hasError = $false;
 
-Set-Location "src/Api";
+Set-Location "src/Core";
 foreach ($testDirectory in $testDirectories) {
 	dotnet test $testDirectory.FullName
 	if ($LASTEXITCODE -ne 0) {
