@@ -49,6 +49,8 @@ namespace BudgetBuddy.Api.Bootstrap
                 {
                     c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 })
+                .UseFileServer("client")
+                .UseDefaultFiles("client")
                 .UseMvc();
         }
 

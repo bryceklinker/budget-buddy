@@ -11,6 +11,7 @@ project.lock.json
 
 # Node
 node_modules
+typings
 
 # Publish
 dist
