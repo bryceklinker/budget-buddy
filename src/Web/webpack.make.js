@@ -1,6 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = function make(env) {
     return {
@@ -34,33 +35,12 @@ function getEntry(env) {
     
     return {
         app: './app/main.ts',
-        vendor: [
-            'bootstrap-loader',
-            'rxjs',
-            'zone.js',
-            'core-js',
-            'reflect-metadata',
-            '@angular/core',
-            '@angular/common',
-            '@angular/http',
-            '@angular/router',
-            '@angular/router-deprecated',
-            '@angular/platform-browser',
-            '@angular/platform-browser-dynamic'
-        ]
+        vendor: './app/vendor.ts'
     }
 }
 
 function getPlugins(env) {
-    if (isTest(env))
-        return [];
-
     var plugins = [
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            filename: 'js/vendor.[hash].js',
-            minChunks: Infinity
-        }),
         new HtmlWebpackPlugin({
             template: './index.html',
             filename: 'index.html',
@@ -68,8 +48,24 @@ function getPlugins(env) {
         }),
         new webpack.ProvidePlugin({
             'jQuery': 'jquery'
-        })
+        }),
+        new CopyWebpackPlugin([
+            { 
+                from: isRelease(env) ? 'config.release.json' : 'config.local.json', 
+                to: 'config.json' 
+            }
+        ])
     ];
+
+    if (isTest(env))
+        return plugins;
+
+    plugins.push(new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            filename: 'js/vendor.[hash].js',
+            minChunks: Infinity
+        })
+    );
 
     if (isRelease(env)) {
         plugins.push(new webpack.optimize.DedupePlugin());
