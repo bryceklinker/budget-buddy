@@ -42,7 +42,7 @@ function getEntry(env) {
 function getPlugins(env) {
     var plugins = [
         new HtmlWebpackPlugin({
-            template: './index.html',
+            template: './app/index.html',
             filename: 'index.html',
             inject: 'body'
         }),

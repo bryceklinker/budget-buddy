@@ -1,8 +1,6 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "module": "commonjs",
         "moduleResolution": "node",
         "outDir": "jsout",

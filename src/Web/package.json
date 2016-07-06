@@ -1,11 +1,11 @@
 {
-  "name": "budgetbuddy.web",
+  "name": "budget-buddy.web",
   "version": "0.0.1",
   "description": "",
-  "main": "main.ts",
+  "main": "app/main.ts",
   "scripts": {
-    "postinstall": "typings install",
-    "prebuild": "rimraf ./dist",
+    "test": "karma start",
+    "test:single": "karma start --single-run",
     "build": "webpack --config ./webpack.release.js --progress --colors",
     "start": "webpack-dev-server --config ./webpack.dev.js --progress --colors"
   },
@@ -19,40 +19,37 @@
     "url": "https://github.com/bryceklinker/budget-buddy/issues"
   },
   "homepage": "https://github.com/bryceklinker/budget-buddy#readme",
-  "devDependencies": {
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-ui-router": "^0.3.1",
     "bootstrap-loader": "^1.0.10",
+    "bootstrap-sass": "^3.3.6",
+    "core-js": "^2.4.0",
+    "jquery": "^2.2.4"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.5.7",
     "copy-webpack-plugin": "^3.0.1",
     "css-loader": "^0.23.1",
     "file-loader": "^0.9.0",
     "html-loader": "^0.4.3",
     "html-webpack-plugin": "^2.22.0",
-    "imports-loader": "^0.6.5",
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.1.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "karma-spec-reporter": "0.0.26",
+    "karma-webpack": "^1.7.0",
     "node-sass": "^3.8.0",
-    "resolve-url-loader": "^1.5.0",
-    "rimraf": "^2.5.3",
-    "sass-loader": "^3.2.3",
+    "phantomjs-prebuilt": "^2.1.7",
+    "resolve-url-loader": "^1.6.0",
+    "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
+    "typescript": "^1.8.10",
     "typings": "^1.3.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
-  },
-  "dependencies": {
-    "@angular/common": "^2.0.0-rc.4",
-    "@angular/compiler": "^2.0.0-rc.4",
-    "@angular/core": "^2.0.0-rc.4",
-    "@angular/http": "^2.0.0-rc.4",
-    "@angular/platform-browser": "^2.0.0-rc.4",
-    "@angular/platform-browser-dynamic": "^2.0.0-rc.4",
-    "@angular/router": "^3.0.0-beta.2",
-    "@angular/router-deprecated": "^2.0.0-rc.2",
-    "bootstrap-sass": "^3.3.6",
-    "core-js": "^2.4.0",
-    "jquery": "^2.2.4",
-    "reflect-metadata": "^0.1.3",
-    "rxjs": "^5.0.0-beta.6",
-    "typescript": "^1.8.10",
-    "zone.js": "^0.6.12"
   }
 }
