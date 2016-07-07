@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BudgetBuddy.Core.Budgets.Exists;
+using BudgetBuddy.Api.Budgets.Exists;
 
 namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.Exists
 {

@@ -1,9 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets;
-using BudgetBuddy.Core.Budgets.Exists;
-using BudgetBuddy.Core.Budgets.UpdateBudget;
-using BudgetBuddy.Core.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.ViewModels;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.AddBudget;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Exists;

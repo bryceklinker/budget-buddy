@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BudgetBuddy.Core.Budgets.AddBudget;
-using BudgetBuddy.Core.Budgets.Exists;
-using BudgetBuddy.Core.Budgets.GetBudget;
-using BudgetBuddy.Core.Budgets.UpdateBudget;
-using BudgetBuddy.Core.Budgets.ViewModels;
-using BudgetBuddy.Core.General;
+using BudgetBuddy.Api.Budgets.Add;
+using BudgetBuddy.Api.Budgets.Exists;
+using BudgetBuddy.Api.Budgets.Get;
+using BudgetBuddy.Api.Budgets.Update;
+using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.General;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetBuddy.Api.Budgets

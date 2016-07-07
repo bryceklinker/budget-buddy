@@ -1,4 +1,4 @@
-﻿using BudgetBuddy.Core.General;
+﻿using BudgetBuddy.Api.General;
 
 namespace BudgetBuddy.Test.Utilities.Stubs.General
 {

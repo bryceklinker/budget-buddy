@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BudgetBuddy.Core.Budgets.AddBudget;
-using BudgetBuddy.Core.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Add;
+using BudgetBuddy.Api.Budgets.ViewModels;
 
 namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.AddBudget
 {
