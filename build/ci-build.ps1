@@ -5,13 +5,23 @@ Write-Host $testDirectories;
 
 $hasError = $false;
 
-pushd "src/Core"
+pushd "src/Api"
 foreach ($testDirectory in $testDirectories) {
 	dotnet test $testDirectory.FullName
 	if ($LASTEXITCODE -ne 0) {
 		$hasError = $true;
 	}
 }
+popd
+
+pushd "src/Web"
+
+npm install;
+
+npm run test:single;
+
+npm run build;
+
 popd
 
 if ($hasError) {
