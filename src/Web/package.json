@@ -7,6 +7,7 @@
     "postinstall": "npm install typings -g & typings install",
     "test": "karma start",
     "test:single": "karma start --single-run",
+    "prebuild": "rimraf ./dist",
     "build": "webpack --config ./webpack.release.js --progress --colors",
     "start": "webpack-dev-server --config ./webpack.dev.js --progress --colors"
   },
@@ -44,6 +45,7 @@
     "node-sass": "^3.8.0",
     "phantomjs-prebuilt": "^2.1.7",
     "resolve-url-loader": "^1.6.0",
+    "rimraf": "^2.5.3",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
