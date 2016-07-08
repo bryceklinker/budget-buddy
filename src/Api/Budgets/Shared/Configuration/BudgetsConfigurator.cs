@@ -2,13 +2,13 @@
 using BudgetBuddy.Infrastructure.Configuration;
 using Microsoft.Extensions.Configuration;
 
-namespace BudgetBuddy.Api.Budgets.Configuration
+namespace BudgetBuddy.Api.Budgets.Shared.Configuration
 {
     public class BudgetsConfigurator : IConfigurator
     {
         public void Configure(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Budgets", "Configuration", "budgets.json"));
+            builder.AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Budgets", "Shared", "Configuration", "budgets.json"));
         }
     }
 }

@@ -16,15 +16,9 @@ namespace BudgetBuddy.Api.Test.General
         }
 
         [Fact]
-        public void CurrentMonth_ShouldGetCurrentMonth()
+        public void CurrentMonth_ShouldGetCurrentDate()
         {
-            Assert.Equal(DateTime.Now.Month, _dateTimeService.CurrentMonth);
-        }
-
-        [Fact]
-        public void CurrentYear_ShouldGetCurrentYear()
-        {
-            Assert.Equal(DateTime.Now.Year, _dateTimeService.CurrentYear);
+            Assert.Equal(DateTime.Now.Date, _dateTimeService.Now.Date);
         }
 
         [Fact]

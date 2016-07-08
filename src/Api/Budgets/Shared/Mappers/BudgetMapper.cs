@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Model.Entities;
-using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 
-namespace BudgetBuddy.Api.Budgets.Mappers
+namespace BudgetBuddy.Api.Budgets.Shared.Mappers
 {
     public class BudgetMapper
     {
         public void Map(BudgetViewModel viewModel, Budget budget)
         {
-            budget.Year = viewModel.Year;
-            budget.Month = viewModel.Month;
+            budget.StartDate = new DateTime(viewModel.Year, viewModel.Month, 1);
             MapLineItems(viewModel.Categories, budget.LineItems);
         }
 

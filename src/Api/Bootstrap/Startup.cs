@@ -1,7 +1,13 @@
-﻿using System.Reflection;
-using BudgetBuddy.Api.Budgets.Model;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using BudgetBuddy.Api.Budgets.Copy;
+using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
+using Hangfire;
+using Hangfire.AspNetCore;
+using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +42,7 @@ namespace BudgetBuddy.Api.Bootstrap
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(typeof(IConfiguration), Configuration)
+                .AddHangfire(g => g.UseDefaultActivator().UseSqlServerStorage(Configuration["Budgets:ConnectionString"]))
                 .AddEntityFramework()
                 .AddEntityFrameworkSqlServer()
                 .AddDbContext<BudgetContext>(o => o.UseSqlServer(Configuration["Budgets:ConnectionString"]))
@@ -49,9 +56,18 @@ namespace BudgetBuddy.Api.Bootstrap
                 {
                     c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
                 })
-                .UseFileServer("client")
-                .UseDefaultFiles("client")
+                .UseFileServer("/client")
+                .UseDefaultFiles("/client")
+                .UseHangfireDashboard()
+                .UseHangfireServer(new BackgroundJobServerOptions
+                {
+                    Activator = new AspNetCoreJobActivator(app.ApplicationServices.GetService<IServiceScopeFactory>())
+                })
                 .UseMvc();
+
+            var recurringManager = new RecurringJobManager();
+            recurringManager.AddOrUpdate(CopyBudgetCommand.JobId, CopyBudgetCommand.Job, Cron.Monthly());
+            BackgroundJob.Enqueue<ICopyBudgetCommand>(command => command.Execute());
         }
 
         private IConfiguration CreateConfig()

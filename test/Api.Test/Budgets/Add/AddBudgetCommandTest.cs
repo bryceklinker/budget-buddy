@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.Model.Entities;
-using BudgetBuddy.Api.Budgets.ViewModels;
-using BudgetBuddy.Api.Test.Budgets.Asserts;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
 using Xunit;
 using System.Linq;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
+using BudgetBuddy.Api.Test.Budgets.Shared.Asserts;
 
 namespace BudgetBuddy.Api.Test.Budgets.Add
 {
@@ -29,8 +29,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
         [Fact]
         public async Task Execute_ShouldAddBudget()
         {
-            _budgetViewModel.Month = 6;
-            _budgetViewModel.Year = 2015;
+            _budgetViewModel.StartDate = new DateTime(2015, 6, 1);
 
             var id = await _addBudgetCommand.Execute(_budgetViewModel);
             AssertAddedBudget(_budgetViewModel, id);
@@ -83,13 +82,12 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
         [Fact]
         public async Task Execute_ShouldThrowInvalidOperation()
         {
-            _budgetContext.Add(new Budget { Month = 4, Year = 9 });
+            _budgetContext.Add(new Budget {StartDate = new DateTime(9, 4, 1)});
             await _budgetContext.SaveChangesAsync();
 
             try
             {
-                _budgetViewModel.Month = 4;
-                _budgetViewModel.Year = 9;    
+                _budgetViewModel.StartDate = new DateTime(9, 4, 1);
                 await _addBudgetCommand.Execute(_budgetViewModel);
             }
             catch (InvalidOperationException ex)

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Mappers;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Shared.Mappers;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,8 +28,8 @@ namespace BudgetBuddy.Api.Budgets.Update
         public async Task Execute(BudgetViewModel budgetViewModel)
         {
             var budget = await _budgetContext.Budgets
-                .Where(b => b.Month == budgetViewModel.Month)
-                .Where(b => b.Year == budgetViewModel.Year)
+                .Where(b => b.StartDate.Month == budgetViewModel.Month)
+                .Where(b => b.StartDate.Year == budgetViewModel.Year)
                 .SingleAsync();
 
             _budgetMapper.Map(budgetViewModel, budget);

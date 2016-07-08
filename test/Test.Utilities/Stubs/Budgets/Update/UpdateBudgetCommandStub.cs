@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Api.Budgets.Update;
-using BudgetBuddy.Api.Budgets.ViewModels;
 
 namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.UpdateBudget
 {

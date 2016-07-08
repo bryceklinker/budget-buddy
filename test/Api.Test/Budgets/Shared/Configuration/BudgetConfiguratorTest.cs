@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using BudgetBuddy.Api.Budgets.Configuration;
+using BudgetBuddy.Api.Budgets.Shared.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Xunit;
 
-namespace BudgetBuddy.Api.Test.Budgets.Configuration
+namespace BudgetBuddy.Api.Test.Budgets.Shared.Configuration
 {
     public class BudgetConfiguratorTest
     {

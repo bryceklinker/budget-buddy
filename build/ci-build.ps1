@@ -5,14 +5,14 @@ Write-Host $testDirectories;
 
 $hasError = $false;
 
-Set-Location "src/Core";
+pushd "src/Core"
 foreach ($testDirectory in $testDirectories) {
 	dotnet test $testDirectory.FullName
 	if ($LASTEXITCODE -ne 0) {
 		$hasError = $true;
 	}
 }
-Set-Location "../..";
+popd
 
 if ($hasError) {
 	exit 1;

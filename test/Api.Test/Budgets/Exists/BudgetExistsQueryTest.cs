@@ -1,7 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Exists;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
@@ -23,7 +24,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Exists
         [Fact]
         public async Task Execute_ShouldBeTrue()
         {
-            _budgetContext.Add(new Budget {Month = 4, Year = 2013});
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2013, 4, 1)});
             await _budgetContext.SaveChangesAsync();
 
             var exists = await _budgetExistsQuery.Execute(4, 2013);
@@ -33,7 +34,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Exists
         [Fact]
         public async Task Execute_ShouldBeFalse()
         {
-            _budgetContext.Add(new Budget { Month = 4, Year = 2013 });
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2013, 4, 1)});
             await _budgetContext.SaveChangesAsync();
 
             var exists = await _budgetExistsQuery.Execute(5, 2013);

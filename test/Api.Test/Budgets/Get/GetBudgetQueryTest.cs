@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Get;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.Model.Entities;
-using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
@@ -20,7 +20,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
 
         public GetBudgetQueryTest()
         {
-            _budget = new Budget { Month = 6, Year = 2015, LineItems = new List<BudgetLineItem>()};
+            _budget = new Budget {StartDate = new DateTime(2015, 6, 1), LineItems = new List<BudgetLineItem>()};
             _budgetContext = DbContextFactory.Create<BudgetContext>();
             _budgetContext.Add(_budget);
             _budgetContext.SaveChanges();
@@ -31,8 +31,8 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
         [Fact]
         public async Task Execute_ShouldGetBudgetForMonthAndYear()
         {
-            _budgetContext.Add(new Budget {Month = 5, Year = 2015});
-            _budgetContext.Add(new Budget {Month = 6, Year = 2014});
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2015, 5, 1)});
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2014, 6, 1)});
             await _budgetContext.SaveChangesAsync();
 
             var viewModel = await Execute();
@@ -114,7 +114,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
 
         private Task<BudgetViewModel> Execute()
         {
-            return _getBudgetQuery.Execute(_budget.Month, _budget.Year);
+            return _getBudgetQuery.Execute(_budget.StartDate.Month, _budget.StartDate.Year);
         }
 
         private void AssertCategoryEqual(Category category, BudgetCategoryViewModel viewModel)

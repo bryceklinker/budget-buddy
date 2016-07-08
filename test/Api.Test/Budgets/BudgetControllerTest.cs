@@ -1,7 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets;
-using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.AddBudget;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Exists;
@@ -36,7 +37,7 @@ namespace BudgetBuddy.Api.Test.Budgets
         [Fact]
         public async Task GetBudget_ShouldGetBudgetForCurrentMonth()
         {
-            _dateTimeServiceStub.CurrentMonth = 6;
+            _dateTimeServiceStub.Now = new DateTime(2016, 6, 1);
 
             await _budgetController.GetBudget();
             Assert.Equal(6, _getBudgetQueryStub.Month);
@@ -45,7 +46,7 @@ namespace BudgetBuddy.Api.Test.Budgets
         [Fact]
         public async Task GetBudget_ShouldGetBudgetForCurrentYear()
         {
-            _dateTimeServiceStub.CurrentYear = 2016;
+            _dateTimeServiceStub.Now = new DateTime(2016, 2, 1);
 
             await _budgetController.GetBudget();
             Assert.Equal(2016, _getBudgetQueryStub.Year);
@@ -75,14 +76,14 @@ namespace BudgetBuddy.Api.Test.Budgets
 
             var result = await _budgetController.GetBudget();
             Assert.IsType<NotFoundResult>(result);
-            Assert.Equal(_dateTimeServiceStub.CurrentMonth, _budgetExistsQueryStub.Month);
-            Assert.Equal(_dateTimeServiceStub.CurrentYear, _budgetExistsQueryStub.Year);
+            Assert.Equal(_dateTimeServiceStub.Now.Month, _budgetExistsQueryStub.Month);
+            Assert.Equal(_dateTimeServiceStub.Now.Year, _budgetExistsQueryStub.Year);
         }
 
         [Fact]
         public async Task AddBudget_ShouldReturnNewBudgetId()
         {
-            var viewModel = new BudgetViewModel {Month = 4, Year = 2015};
+            var viewModel = new BudgetViewModel { StartDate = new DateTime(2015, 4, 1)};
 
             var result = (CreatedResult)await _budgetController.AddBudget(viewModel);
             AssertBudgetAdded(result, viewModel);

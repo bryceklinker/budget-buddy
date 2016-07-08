@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,8 +24,8 @@ namespace BudgetBuddy.Api.Budgets.Exists
         public Task<bool> Execute(int month, int year)
         {
             return _budgetContext.Budgets
-                .Where(b => b.Month == month)
-                .AnyAsync(b => b.Year == year);
+                .Where(b => b.StartDate.Month == month)
+                .AnyAsync(b => b.StartDate.Year == year);
         }
     }
 }

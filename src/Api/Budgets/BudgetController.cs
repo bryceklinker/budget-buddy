@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
 using BudgetBuddy.Api.Budgets.Exists;
 using BudgetBuddy.Api.Budgets.Get;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Api.Budgets.Update;
-using BudgetBuddy.Api.Budgets.ViewModels;
 using BudgetBuddy.Api.General;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,8 +32,9 @@ namespace BudgetBuddy.Api.Budgets
         [HttpGet("{month:int}/{year:int}")]
         public async Task<IActionResult> GetBudget(int? month = null, int? year = null)
         {
-            month = month ?? _dateTimeService.CurrentMonth;
-            year = year ?? _dateTimeService.CurrentYear;
+            var now = _dateTimeService.Now;
+            month = month ?? now.Month;
+            year = year ?? now.Year;
 
             var exists = await _budgetExistsQuery.Execute(month.Value, year.Value);
             if (!exists)

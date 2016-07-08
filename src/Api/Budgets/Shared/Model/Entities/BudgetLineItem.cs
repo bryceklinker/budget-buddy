@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetBuddy.Api.Budgets.Model.Entities
+namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
 {
     public class BudgetLineItem
     {
@@ -19,13 +19,10 @@ namespace BudgetBuddy.Api.Budgets.Model.Entities
         public decimal Actual { get; set; }
 
         internal Guid BudgetId { get; set; }
-
         internal Guid CategoryId { get; set; }
 
-        [Required]
         public virtual Budget Budget { get; set; }
 
-        [Required]
         public virtual Category Category { get; set; }
     }
 }

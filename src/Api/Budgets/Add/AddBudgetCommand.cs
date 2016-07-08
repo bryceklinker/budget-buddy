@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BudgetBuddy.Api.Budgets.Mappers;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.Model.Entities;
-using BudgetBuddy.Api.Budgets.ViewModels;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using System.Linq;
+using BudgetBuddy.Api.Budgets.Shared.Mappers;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Budgets.Add
@@ -44,8 +44,8 @@ namespace BudgetBuddy.Api.Budgets.Add
         private Task<bool> IsExistingBudget(BudgetViewModel viewModel)
         {
             return _budgetContext.Budgets
-                .Where(b => b.Month == viewModel.Month)
-                .Where(b => b.Year == viewModel.Year)
+                .Where(b => b.StartDate.Month == viewModel.Month)
+                .Where(b => b.StartDate.Year == viewModel.Year)
                 .AnyAsync();
         }
 

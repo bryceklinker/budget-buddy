@@ -1,10 +1,10 @@
-﻿using BudgetBuddy.Api.General;
+﻿using System;
+using BudgetBuddy.Api.General;
 
 namespace BudgetBuddy.Test.Utilities.Stubs.General
 {
     public class DateTimeServiceStub : IDateTimeService
     {
-        public int CurrentMonth { get; set; }
-        public int CurrentYear { get; set; }
+        public DateTime Now { get; set; }
     }
 }

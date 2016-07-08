@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Model.Entities;
-using BudgetBuddy.Api.Budgets.ViewModels;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using Xunit;
 
-namespace BudgetBuddy.Api.Test.Budgets.Asserts
+namespace BudgetBuddy.Api.Test.Budgets.Shared.Asserts
 {
     public static class BudgetLineItemAssert
     {

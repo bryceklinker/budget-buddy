@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetBuddy.Api.Budgets.Model.Entities
+namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
 {
     public class Budget
     {
@@ -10,10 +10,7 @@ namespace BudgetBuddy.Api.Budgets.Model.Entities
         public Guid Id { get; set; }
 
         [Required]
-        public int Month { get; set; }
-
-        [Required]
-        public int Year { get; set; }
+        public DateTime StartDate { get; set; }
 
         public virtual ICollection<BudgetLineItem> LineItems { get; set; }
     }

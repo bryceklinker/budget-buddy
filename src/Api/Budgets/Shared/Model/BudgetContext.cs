@@ -1,7 +1,7 @@
-﻿using BudgetBuddy.Api.Budgets.Model.Entities;
+﻿using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetBuddy.Api.Budgets.Model
+namespace BudgetBuddy.Api.Budgets.Shared.Model
 {
     public class BudgetContext : DbContext
     {
@@ -20,28 +20,28 @@ namespace BudgetBuddy.Api.Budgets.Model
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Budget>()
-                .HasAlternateKey(b => new {b.Year, b.Month})
-                .HasName("AK_Budget_Month_Year");
+                .HasIndex(b => new {b.StartDate})
+                .IsUnique();
 
             modelBuilder.Entity<Category>()
-                .HasAlternateKey(c => c.Name)
-                .HasName("AK_Category_Name");
+                .HasIndex(c => c.Name)
+                .IsUnique();
 
             modelBuilder.Entity<BudgetLineItem>()
-                .HasOne(l => l.Category)
-                .WithMany(c => c.BudgetLineItems)
-                .HasForeignKey(l => l.CategoryId)
-                .IsRequired();
+                .HasIndex(l => new {l.CategoryId, l.BudgetId, l.Name})
+                .IsUnique();
 
             modelBuilder.Entity<BudgetLineItem>()
-                .HasOne(l => l.Budget)
+                .HasOne(b => b.Budget)
                 .WithMany(b => b.LineItems)
-                .HasForeignKey(l => l.BudgetId)
+                .HasForeignKey(b => b.BudgetId)
                 .IsRequired();
 
             modelBuilder.Entity<BudgetLineItem>()
-                .HasAlternateKey(l => new {l.CategoryId, l.BudgetId, l.Name})
-                .HasName("AK_BudgetLineItem_Category_Budget_Name");
+                .HasOne(b => b.Category)
+                .WithMany(b => b.BudgetLineItems)
+                .HasForeignKey(b => b.CategoryId)
+                .IsRequired();
         }
     }
 }

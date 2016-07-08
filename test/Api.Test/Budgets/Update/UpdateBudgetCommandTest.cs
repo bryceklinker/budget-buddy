@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BudgetBuddy.Api.Budgets.Model;
-using BudgetBuddy.Api.Budgets.Model.Entities;
 using BudgetBuddy.Api.Budgets.Update;
-using BudgetBuddy.Api.Budgets.ViewModels;
-using BudgetBuddy.Api.Test.Budgets.Asserts;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Factories;
 using Xunit;
 using System.Linq;
+using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.Budgets.Shared.ViewModels;
+using BudgetBuddy.Api.Test.Budgets.Shared.Asserts;
 
 namespace BudgetBuddy.Api.Test.Budgets.Update
 {
@@ -25,8 +25,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Update
         {
             _budgetViewModel = new BudgetViewModel
             {
-                Month = 8,
-                Year = 2014,
+                StartDate = new DateTime(2014, 8, 1),
                 Categories = new[]
                 {
                     new BudgetCategoryViewModel
@@ -42,8 +41,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Update
             };
             _budget = new Budget
             {
-                Month = _budgetViewModel.Month,
-                Year = _budgetViewModel.Year,
+                StartDate = new DateTime(_budgetViewModel.Year, _budgetViewModel.Month, 1),
                 LineItems = new List<BudgetLineItem>()
             };
             _budgetContext = DbContextFactory.Create<BudgetContext>();

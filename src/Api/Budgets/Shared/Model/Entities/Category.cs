@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace BudgetBuddy.Api.Budgets.Model.Entities
+namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
 {
     public class Category
     {

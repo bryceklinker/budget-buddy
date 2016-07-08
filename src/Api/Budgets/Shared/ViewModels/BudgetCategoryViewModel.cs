@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BudgetBuddy.Api.Budgets.ViewModels
+namespace BudgetBuddy.Api.Budgets.Shared.ViewModels
 {
     public class BudgetCategoryViewModel
     {
