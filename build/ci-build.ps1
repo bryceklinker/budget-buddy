@@ -5,19 +5,33 @@ function Exit-On-Error
 	}
 }
 
-function Build-Api 
+function Clean-Api 
 {
-	dotnet restore;
+	$diretories = Get-ChildItem -Path ".\src" | ? { $_.PSIsContainer } | Select-Object FullName;
+	foreach ($directory in $diretories) {
+		dotnet clean $directory.FullName;
+		Exit-On-Error;
+	}
+}
 
+function Test-Api 
+{
 	$testDirectories = Get-ChildItem -Path ".\test" | ? { $_.PSIsContainer } | Select-Object FullName;
-	Write-Host $testDirectories;
-
 	pushd "src/Api"
 	foreach ($testDirectory in $testDirectories) {
 		dotnet test $testDirectory.FullName
 		Exit-On-Error;
 	}
 	popd
+}
+
+function Build-Api 
+{
+	Clean-Api;
+
+	dotnet restore;
+
+	Test-Api;
 }
 
 function Build-Client

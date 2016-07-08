@@ -4,6 +4,7 @@
   "description": "",
   "main": "app/main.ts",
   "scripts": {
+    "postinstall": "npm install typings -g & typings install",
     "test": "karma start",
     "test:single": "karma start --single-run",
     "build": "webpack --config ./webpack.release.js --progress --colors",
