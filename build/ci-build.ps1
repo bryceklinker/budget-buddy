@@ -21,6 +21,21 @@ function Clean-Api
 
 		Exit-On-Error;
 	}
+
+	$testDiretories = Get-ChildItem -Path ".\test" | ? { $_.PSIsContainer } | Select-Object FullName;
+	foreach ($directory in $diretories) {
+		$binPath = Join-Path $directory.FullName "bin"
+		if (Test-Path $binPath) {
+			Remove-Item -Path $binPath -Recurse -Force;
+		}
+
+		$objPath = Join-Path $directory.FullName "obj"	
+		if (Test-Path $objPath) {
+			Remove-Item -Path $objPath -Recurse -Force;
+		}
+
+		Exit-On-Error;
+	}
 }
 
 function Test-Api 
