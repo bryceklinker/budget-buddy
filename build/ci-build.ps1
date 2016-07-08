@@ -1,6 +1,8 @@
 function Exit-On-Error
 {
 	if ($LASTEXITCODE -ne 0) {
+		Write-Host $LASTEXITCODE;
+		
 		exit $LASTEXITCODE;
 	}
 }
@@ -18,7 +20,6 @@ function Clean-Api
 		if (Test-Path $objPath) {
 			Remove-Item -Path $objPath -Recurse -Force;
 		}
-
 		Exit-On-Error;
 	}
 
