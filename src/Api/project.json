@@ -43,6 +43,7 @@
   "publishOptions": {
     "include": [
       "web.config",
+      "wwwroot",
       "**/*.json"
     ]
   },
