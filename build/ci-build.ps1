@@ -9,7 +9,16 @@ function Clean-Api
 {
 	$diretories = Get-ChildItem -Path ".\src" | ? { $_.PSIsContainer } | Select-Object FullName;
 	foreach ($directory in $diretories) {
-		dotnet clean $directory.FullName;
+		$binPath = Join-Path $directory.FullName "bin"
+		if (Test-Path $binPath) {
+			Remove-Item -Path $binPath -Recurse -Force;
+		}
+
+		$objPath = Join-Path $directory.FullName "obj"	
+		if (Test-Path $objPath) {
+			Remove-Item -Path $objPath -Recurse -Force;
+		}
+
 		Exit-On-Error;
 	}
 }
