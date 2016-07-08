@@ -3,18 +3,16 @@ import { Config, ConfigService } from '../shared';
 
 describe('BudgetComponent', () => {
     let $httpBackend: angular.IHttpBackendService;
-    let $compile: angular.ICompileService;
-    let $scope: angular.IScope;
+    let $http: angular.IHttpService;
     let budget: Budget;
     let configService: ConfigService;
     let config: Config;
     let budgetComponent: BudgetComponent;
     let componentOptions: angular.IComponentOptions;
 
-    beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$q_, _$compile_, _$rootScope_, _budgetDirective_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$http_, _$q_, _budgetDirective_, _ConfigService_) => {
+        $http = _$http_;
         $httpBackend = _$httpBackend_;
-        $compile = _$compile_;
-        $scope = _$rootScope_.$new();
 
         configService = _ConfigService_;
         config = { budgetApiUrl: 'http://google.com/api' };
@@ -28,6 +26,14 @@ describe('BudgetComponent', () => {
         budgetComponent = _$controller_(BudgetComponent);
     }));
 
+    it('should use budget component as controller', () => {
+        expect(componentOptions.controller).toBe(BudgetComponent);
+    });
+
+    it('should use budget template as template', () => {
+        expect(componentOptions.template).toBe(require('./templates/budget.template'));
+    });
+
     it('should get current budget', () => {
         budgetComponent.$onInit();
         $httpBackend.flush();
@@ -35,11 +41,38 @@ describe('BudgetComponent', () => {
         expect(budgetComponent.budget).toEqual(budget);
     });
 
-    it('should use budget component as controller', () => {
-        expect(componentOptions.controller).toBe(BudgetComponent);
+    it('should add category to budget', () => {
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        budgetComponent.addCategory();
+        expect(budgetComponent.budget.categories.length).toBe(1);
+        expect(budgetComponent.budget.categories[0]).toEqual({});
     });
 
-    it('should use budget template as template', () => {
-        expect(componentOptions.template).toBe(require('./templates/budget.template'));
+    it('should add line item to category', () => {
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        budgetComponent.addCategory();
+        budgetComponent.addLineItem(budgetComponent.budget.categories[0]);
+
+        expect(budgetComponent.budget.categories[0].lineItems.length).toBe(1);
+        expect(budgetComponent.budget.categories[0].lineItems[0]).toEqual({});
+    });
+
+    it('should put budget in api', () => {
+        spyOn($http, 'put').and.callThrough();
+
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budget)
+            .respond({});
+
+        budgetComponent.save();
+        $httpBackend.flush();
+        
+        expect($http.put).toHaveBeenCalledWith(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget);
     });
 })
