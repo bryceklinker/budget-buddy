@@ -1,9 +1,32 @@
 import { ConfigService } from '../shared';
-import { Budget, Category } from './';
+import { 
+    Budget, 
+    Category,
+    calculateBudgetActualTotal, 
+    calculateBudgetEstimateTotal, 
+    calculateBudgetEstimateBalance, 
+    calculateBudgetActualBalance 
+} from './';
 
 import './styles/budget';
 export class BudgetComponent implements angular.IComponentController {
     budget: Budget;
+    
+    get estimateTotal(): number {
+        return calculateBudgetEstimateTotal(this.budget);
+    }
+
+    get actualTotal(): number {
+        return calculateBudgetActualTotal(this.budget);
+    }
+
+    get estimateBalance(): number {
+        return calculateBudgetEstimateBalance(this.budget);
+    }
+
+    get actualBalance(): number {
+        return calculateBudgetActualBalance(this.budget);
+    }
 
     constructor(private configService: ConfigService,
         private $http: angular.IHttpService) {
@@ -16,18 +39,18 @@ export class BudgetComponent implements angular.IComponentController {
             .then(res => this.budget = res.data);
     }
 
+    getCategoryHeading(category: Category): string {
+        if (!category.name)
+            return 'New Category';
+        
+        return category.name;
+    }
+
     addCategory(): void {
         if (!this.budget.categories)
             this.budget.categories = [];
         
         this.budget.categories.push({});
-    }
-
-    addLineItem(category: Category): void {
-        if (!category.lineItems)
-            category.lineItems = [];
-        
-        category.lineItems.push({});
     }
 
     save(): void {
@@ -42,4 +65,4 @@ angular.module('budget-buddy')
     .component('budget', {
         controller: BudgetComponent,
         template: require('./templates/budget.template')
-    })
+    });

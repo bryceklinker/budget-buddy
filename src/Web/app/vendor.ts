@@ -4,3 +4,4 @@ import 'bootstrap-loader';
 
 import 'angular';
 import 'angular-ui-router';
+import './shared/ui-bootstrap';

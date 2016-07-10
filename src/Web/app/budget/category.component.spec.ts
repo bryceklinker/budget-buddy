@@ -65,5 +65,24 @@ describe('CategoryComponent', () => {
         categoryComponent.addLineItem();
         expect(categoryComponent.category.lineItems.length).toBe(1);
         expect(categoryComponent.category.lineItems[0]).toEqual({});
+    });
+
+    it('should be collapsed', () => {
+        categoryComponent.toggleCollapse();
+        expect(categoryComponent.isCollapsed).toBeTruthy();
+        expect(categoryComponent.collapseText).toBe('Expand');
+    });
+
+    it('should be expanded', () => {
+        expect(categoryComponent.isCollapsed).toBeFalsy();
+        expect(categoryComponent.collapseText).toBe('Collapse');
+    });
+
+    it('should expand after adding line item', () => {
+        categoryComponent.toggleCollapse();
+        expect(categoryComponent.isCollapsed).toBeTruthy();
+
+        categoryComponent.addLineItem();
+        expect(categoryComponent.isCollapsed).toBeFalsy();
     })
 })

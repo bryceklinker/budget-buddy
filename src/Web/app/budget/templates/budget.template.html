@@ -1,5 +1,15 @@
 <div class="row">
-    <div class="col-sm-12 toolbar text-right">
+    <div class="col-sm-6">
+        <form class="form-horizontal">
+            <div class="form-group" ng-class="{'has-error': !$ctrl.budget.income}">
+                <label class="control-label col-sm-2">Income:</label>
+                <div class="col-sm-9">
+                    <input type="number" class="form-control text-right" ng-model="$ctrl.budget.income" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-6 toolbar text-right">
         <div class="btn-group ">
             <button class="btn btn-primary" type="button" ng-click="$ctrl.addCategory()">
                 Add Category
@@ -12,27 +22,38 @@
 </div>
 <span></span>
 
-<form class="form" role="form">
-    <div class="row" ng-repeat="category in $ctrl.budget.categories">
-        <category category="category"></category>
-    </div>
-</form>
-
 <div class="row">
-    <div class="col-sm-12 text-right">
+    <div class="col-sm-9">
+        <uib-tabset>
+            <uib-tab index="$index" heading="{{$ctrl.getCategoryHeading(category)}}" ng-repeat="category in $ctrl.budget.categories">
+                <category category="category"></category>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+    <div class="col-sm-3" ng-class="{'totals': $ctrl.budget.categories.length > 0}">
         <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="text-right">Estimate</th>
+                    <th class="text-right">Actual</th>
+                </tr>
+            </thead>
             <tbody>
                 <tr class="text-right">
                     <td>Income:</td>
                     <td>{{$ctrl.budget.income | currency}}</td>
+                    <td>{{$ctrl.budget.income | currency}}</td>
                 </tr>
                 <tr class="text-right">
                     <td>Budgeted:</td>
-                    <td>{{$ctrl.getTotal() | currency}}</td>
+                    <td>{{$ctrl.estimateTotal | currency}}</td>
+                    <td>{{$ctrl.actualTotal | currency}}</td>
                 </tr>
                 <tr class="text-right">
                     <td>Balance:</td>
-                    <td>{{$ctrl.getBalance() | currency}}</td>
+                    <td>{{$ctrl.estimateBalance | currency}}</td>
+                    <td>{{$ctrl.actualBalance | currency}}</td>
                 </tr>
             </tbody>
         </table>

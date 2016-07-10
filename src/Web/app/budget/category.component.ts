@@ -1,15 +1,22 @@
-import { Category } from './';
+import { Category, calculateCategoryActualTotal, calculateCategoryEstimateTotal } from './';
 
 import './styles/category';
 export class CategoryComponent implements angular.IComponentController {
     category: Category;
+    isCollapsed: boolean;
+
+    get collapseText(): string {
+        return this.isCollapsed
+            ? 'Expand'
+            : 'Collapse';
+    }
 
     getEstimateTotal(): number {
-        return this.sumLineItems('estimate');
+        return calculateCategoryEstimateTotal(this.category);
     }
 
     getActualTotal(): number {
-        return this.sumLineItems('actual');
+        return calculateCategoryActualTotal(this.category);
     }
 
     addLineItem(): void {
@@ -17,15 +24,11 @@ export class CategoryComponent implements angular.IComponentController {
             this.category.lineItems = [];
         
         this.category.lineItems.push({});
+        this.isCollapsed = false;
     }
 
-    private sumLineItems(property: string): number {
-        if (!this.category.lineItems)
-            return 0;
-        
-        return this.category.lineItems
-            .map(c => c[property] ? c[property] : 0)
-            .reduce((p, v) => p + v);
+    toggleCollapse(): void {
+        this.isCollapsed = !this.isCollapsed;
     }
 }
 
