@@ -20,7 +20,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
 
         public GetBudgetQueryTest()
         {
-            _budget = new Budget { StartDate = new DateTime(2015, 6, 1), LineItems = new List<BudgetLineItem>() };
+            _budget = new Budget { StartDate = new DateTime(2015, 6, 1), Income = 34.123m, LineItems = new List<BudgetLineItem>() };
             _budgetContext = DbContextFactory.Create<BudgetContext>();
             _budgetContext.Add(_budget);
             _budgetContext.SaveChanges();

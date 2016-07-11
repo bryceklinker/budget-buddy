@@ -5,7 +5,6 @@ describe('BudgetComponent', () => {
     let $httpBackend: angular.IHttpBackendService;
     let $http: angular.IHttpService;
     let $scope: angular.IScope;
-    let form: angular.IFormController;
     let budget: Budget;
     let configService: ConfigService;
     let config: Config;
@@ -25,7 +24,6 @@ describe('BudgetComponent', () => {
         $httpBackend.whenGET(`${config.budgetApiUrl}/budgets/current`)
             .respond(budget);
 
-        form = jasmine.createSpyObj<angular.IFormController>('form', ['$valid']);
         componentOptions = _budgetDirective_[0];
         budgetComponent = _$controller_(BudgetComponent);
     }));
@@ -60,11 +58,11 @@ describe('BudgetComponent', () => {
         budgetComponent.$onInit();
         $httpBackend.flush();
 
-        $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budget)
+        budgetComponent.budget.income = 23;
+        $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget)
             .respond({});
-
-        form.$valid = true;
-        budgetComponent.save(form);;
+        
+        budgetComponent.save();
         $httpBackend.flush();
 
         expect($http.put).toHaveBeenCalledWith(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget);
@@ -83,8 +81,7 @@ describe('BudgetComponent', () => {
         budgetComponent.$onInit();
         $httpBackend.flush();
 
-        form.$valid = false;
-        budgetComponent.save(form);
+        budgetComponent.save();
         $scope.$digest();
 
         $httpBackend.verifyNoOutstandingRequest();

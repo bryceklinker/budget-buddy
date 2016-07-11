@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using BudgetBuddy.Api.Budgets.Copy;
 using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Telemetry;
+using BudgetBuddy.Api.Telemetry.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Hangfire;
@@ -41,17 +43,19 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             services.AddSingleton(typeof(IConfiguration), Configuration)
                 .AddCors(o => o.AddPolicy(CorsPolicyName, b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()))
-                .AddHangfire(g => g.UseDefaultActivator().UseSqlServerStorage(Configuration["Budgets:ConnectionString"]))
+                .AddHangfire(g => g.UseDefaultActivator().UseSqlServerStorage(Configuration["Hangfire:ConnectionString"]))
                 .AddEntityFramework()
                 .AddEntityFrameworkSqlServer()
                 .AddDbContext<BudgetContext>(o => o.UseSqlServer(Configuration["Budgets:ConnectionString"]))
+                .AddDbContext<TelemetryContext>(o => o.UseSqlServer(Configuration["Telemetry:ConnectionString"]))
                 .AddMvc();
             _dependencyRegistrar.Register(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseCors(CorsPolicyName)
+            app.UseMiddleware<TelemetryMiddleware>()
+                .UseCors(CorsPolicyName)
                 .UseFileServer("/client")
                 .UseDefaultFiles("/client")
                 .UseHangfireDashboard()

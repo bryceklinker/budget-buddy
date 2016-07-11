@@ -2,7 +2,7 @@
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Api.Budgets.Update;
 
-namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.UpdateBudget
+namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.Update
 {
     public class UpdateBudgetCommandStub : IUpdateBudgetCommand
     {

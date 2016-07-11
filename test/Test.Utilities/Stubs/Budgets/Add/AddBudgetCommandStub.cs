@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 
-namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.AddBudget
+namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.Add
 {
     public class AddBudgetCommandStub : IAddBudgetCommand
     {

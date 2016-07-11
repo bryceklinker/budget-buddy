@@ -1,7 +1,8 @@
 import { ConfigService } from '../shared';
 import { 
     Budget, 
-    Category    
+    Category,
+    isBudgetValid
 } from './';
 
 import './styles/budget';
@@ -34,10 +35,9 @@ export class BudgetComponent implements angular.IComponentController {
         this.budget.categories.push({});
     }
 
-    save(form: angular.IFormController): void {
-        if (!form.$valid) {
+    save(): void {
+        if (!isBudgetValid(this.budget))
             return;
-        }
 
         const month = this.budget.month;
         const year = this.budget.year;

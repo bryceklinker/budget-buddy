@@ -15,5 +15,10 @@ namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
         public decimal Income { get; set; }
 
         public virtual ICollection<BudgetLineItem> LineItems { get; set; }
+
+        public Budget()
+        {
+            LineItems = new List<BudgetLineItem>();
+        }
     }
 }
