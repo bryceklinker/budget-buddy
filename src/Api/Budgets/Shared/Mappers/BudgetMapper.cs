@@ -11,6 +11,7 @@ namespace BudgetBuddy.Api.Budgets.Shared.Mappers
         public void Map(BudgetViewModel viewModel, Budget budget)
         {
             budget.StartDate = new DateTime(viewModel.Year, viewModel.Month, 1);
+            budget.Income = viewModel.Income;
             MapLineItems(viewModel.Categories, budget.LineItems);
         }
 

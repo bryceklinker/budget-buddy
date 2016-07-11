@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
@@ -140,10 +141,36 @@ namespace BudgetBuddy.Api.Test.Budgets
         }
 
         [Fact]
+        public void AddBudget_ShouldGetBudgetFromBody()
+        {
+            var fromBody = _budgetController.GetType()
+                .GetMethod("AddBudget")
+                .GetParameters()
+                .Last()
+                .CustomAttributes
+                .First();
+
+            Assert.NotNull(fromBody);
+        }
+
+        [Fact]
         public void UpdateBudget_ShouldAllowHttpPut()
         {
             var httpPut = _budgetController.GetAttribute<HttpPutAttribute>("UpdateBudget");
             Assert.Equal("{month:int}/{year:int}", httpPut.Template);
+        }
+
+        [Fact]
+        public void UpdateBudget_ShouldGetBudgetFromBody()
+        {
+            var fromBody = _budgetController.GetType()
+                .GetMethod("AddBudget")
+                .GetParameters()
+                .Last()
+                .CustomAttributes
+                .First();
+
+            Assert.NotNull(fromBody);
         }
 
         private void AssertBudgetAdded(CreatedResult result, BudgetViewModel viewModel)

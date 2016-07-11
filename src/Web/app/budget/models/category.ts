@@ -1,4 +1,4 @@
-import { BudgetLineItem } from './';
+import { BudgetLineItem } from './budget-line-item';
 
 export interface Category {
     id?: string;

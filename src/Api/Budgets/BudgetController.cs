@@ -45,14 +45,14 @@ namespace BudgetBuddy.Api.Budgets
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> AddBudget(BudgetViewModel viewModel)
+        public async Task<IActionResult> AddBudget([FromBody] BudgetViewModel viewModel)
         {
             var newId = await _addBudgetCommand.Execute(viewModel);
             return Created($"~/budgets/{viewModel.Month}/{viewModel.Year}", newId);
         }
 
         [HttpPut("{month:int}/{year:int}")]
-        public async Task<IActionResult> UpdateBudget(int month, int year, BudgetViewModel viewModel)
+        public async Task<IActionResult> UpdateBudget(int month, int year, [FromBody] BudgetViewModel viewModel)
         {
             var exists = await _budgetExistsQuery.Execute(month, year);
             if (!exists)

@@ -12,6 +12,8 @@ namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
         [Required]
         public DateTime StartDate { get; set; }
 
+        public decimal Income { get; set; }
+
         public virtual ICollection<BudgetLineItem> LineItems { get; set; }
     }
 }

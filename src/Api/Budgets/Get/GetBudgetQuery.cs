@@ -29,6 +29,7 @@ namespace BudgetBuddy.Api.Budgets.Get
                 .Where(b => b.StartDate.Year == year)
                 .Select(b => new BudgetViewModel
                 {
+                    Income = b.Income,
                     StartDate = b.StartDate,
                     Categories = b.LineItems
                         .GroupBy(l => new { l.Category.Id, l.Category.Name })
@@ -43,7 +44,7 @@ namespace BudgetBuddy.Api.Budgets.Get
                                 Actual = l.Actual,
                                 Estimate = l.Estimate
                             })
-                            .ToArray()
+                                .ToArray()
                         })
                         .ToArray()
                 })

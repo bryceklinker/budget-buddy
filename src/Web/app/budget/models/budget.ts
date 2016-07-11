@@ -1,4 +1,8 @@
-import { Category, calculateCategoryEstimateTotal, calculateCategoryActualTotal } from './';
+import {
+    Category,
+    calculateCategoryEstimateTotal,
+    calculateCategoryActualTotal
+} from './category';
 
 export interface Budget {
     income?: number;
@@ -9,7 +13,7 @@ export interface Budget {
 
 export function calculateBudgetEstimateTotal(budget: Budget): number {
     if (!budget
-        ||!budget.categories
+        || !budget.categories
         || budget.categories.length === 0)
         return 0;
 
@@ -30,14 +34,14 @@ export function calculateBudgetActualTotal(budget: Budget): number {
 }
 
 export function calculateBudgetEstimateBalance(budget: Budget): number {
-    if (!budget) 
+    if (!budget)
         return 0;
-    
+
     return budget.income - calculateBudgetEstimateTotal(budget);
 }
 
 export function calculateBudgetActualBalance(budget: Budget): number {
-    if (!budget) 
+    if (!budget)
         return 0;
 
     return budget.income - calculateBudgetActualTotal(budget);

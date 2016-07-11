@@ -20,7 +20,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
 
         public GetBudgetQueryTest()
         {
-            _budget = new Budget {StartDate = new DateTime(2015, 6, 1), LineItems = new List<BudgetLineItem>()};
+            _budget = new Budget { StartDate = new DateTime(2015, 6, 1), LineItems = new List<BudgetLineItem>() };
             _budgetContext = DbContextFactory.Create<BudgetContext>();
             _budgetContext.Add(_budget);
             _budgetContext.SaveChanges();
@@ -31,13 +31,14 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
         [Fact]
         public async Task Execute_ShouldGetBudgetForMonthAndYear()
         {
-            _budgetContext.Add(new Budget {StartDate = new DateTime(2015, 5, 1)});
-            _budgetContext.Add(new Budget {StartDate = new DateTime(2014, 6, 1)});
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2015, 5, 1), Income = 343.123m});
+            _budgetContext.Add(new Budget {StartDate = new DateTime(2014, 6, 1), Income = 3123.32m });
             await _budgetContext.SaveChangesAsync();
 
             var viewModel = await Execute();
             Assert.Equal(2015, viewModel.Year);
             Assert.Equal(6, viewModel.Month);
+            Assert.Equal(34.123m, viewModel.Income);
         }
 
         [Fact]
@@ -46,10 +47,10 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
             var firstCategory = new Category {Id = Guid.NewGuid(), Name = "Misc"};
             var secondCategory = new Category {Id = Guid.NewGuid(), Name = "Food"};
             var thirdCategory = new Category {Id = Guid.NewGuid(), Name = "House"};
-            _budget.LineItems.Add(new BudgetLineItem {Budget = _budget, Category = firstCategory, Name = "Home"});
-            _budget.LineItems.Add(new BudgetLineItem {Budget = _budget, Category = secondCategory, Name = "Home"});
-            _budget.LineItems.Add(new BudgetLineItem {Budget = _budget, Category = firstCategory, Name = "Misc"});
-            _budget.LineItems.Add(new BudgetLineItem {Budget = _budget, Category = thirdCategory, Name = "Home"});
+            _budget.LineItems.Add(new BudgetLineItem { Category = firstCategory, Name = "Home"});
+            _budget.LineItems.Add(new BudgetLineItem { Category = secondCategory, Name = "Home"});
+            _budget.LineItems.Add(new BudgetLineItem { Category = firstCategory, Name = "Misc"});
+            _budget.LineItems.Add(new BudgetLineItem { Category = thirdCategory, Name = "Home"});
             await _budgetContext.SaveChangesAsync();
 
             var viewModel = await Execute();
@@ -60,7 +61,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
         public async Task Execute_ShouldGetCategoryValues()
         {
             var category = new Category {Name = "Bill", Id = Guid.NewGuid()};
-            _budget.LineItems.Add(new BudgetLineItem {Budget = _budget, Category = category, Name = "Jack"});
+            _budget.LineItems.Add(new BudgetLineItem { Category = category, Name = "Jack"});
             await _budgetContext.SaveChangesAsync();
 
             var viewModel = await Execute();

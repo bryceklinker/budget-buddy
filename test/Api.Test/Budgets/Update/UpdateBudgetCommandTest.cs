@@ -25,6 +25,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Update
         {
             _budgetViewModel = new BudgetViewModel
             {
+                Income = 45.3m,
                 StartDate = new DateTime(2014, 8, 1),
                 Categories = new[]
                 {

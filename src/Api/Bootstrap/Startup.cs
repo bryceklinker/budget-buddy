@@ -1,25 +1,23 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using BudgetBuddy.Api.Budgets.Copy;
 using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Hangfire;
 using Hangfire.AspNetCore;
-using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Bootstrap
 {
     public class Startup
     {
+        private const string CorsPolicyName = "Default";
         private static readonly Assembly StartupAssembly = typeof(Startup).GetTypeInfo().Assembly;
         private readonly IDependencyRegistrar _dependencyRegistrar;
         private readonly IConfiguratorLoader _configuratorLoader;
@@ -42,6 +40,7 @@ namespace BudgetBuddy.Api.Bootstrap
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(typeof(IConfiguration), Configuration)
+                .AddCors(o => o.AddPolicy(CorsPolicyName, b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()))
                 .AddHangfire(g => g.UseDefaultActivator().UseSqlServerStorage(Configuration["Budgets:ConnectionString"]))
                 .AddEntityFramework()
                 .AddEntityFrameworkSqlServer()
@@ -52,10 +51,7 @@ namespace BudgetBuddy.Api.Bootstrap
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseCors(c =>
-                {
-                    c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-                })
+            app.UseCors(CorsPolicyName)
                 .UseFileServer("/client")
                 .UseDefaultFiles("/client")
                 .UseHangfireDashboard()

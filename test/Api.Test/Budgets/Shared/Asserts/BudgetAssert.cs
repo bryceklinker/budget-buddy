@@ -11,6 +11,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Shared.Asserts
         {
             Assert.Equal(viewModel.Month, budget.StartDate.Month);
             Assert.Equal(viewModel.Year, budget.StartDate.Year);
+            Assert.Equal(viewModel.Income, budget.Income);
             Assert.Equal(viewModel.Categories.Length, budget.LineItems.GroupBy(l => l.Category.Id).Count());
             foreach (var categoryViewModel in viewModel.Categories)
                 BudgetLineItemAssert.Equal(categoryViewModel, budget.LineItems);

@@ -30,6 +30,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
         public async Task Execute_ShouldAddBudget()
         {
             _budgetViewModel.StartDate = new DateTime(2015, 6, 1);
+            _budgetViewModel.Income = 556.23m;
 
             var id = await _addBudgetCommand.Execute(_budgetViewModel);
             AssertAddedBudget(_budgetViewModel, id);

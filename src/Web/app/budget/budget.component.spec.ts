@@ -4,14 +4,17 @@ import { Config, ConfigService } from '../shared';
 describe('BudgetComponent', () => {
     let $httpBackend: angular.IHttpBackendService;
     let $http: angular.IHttpService;
+    let $scope: angular.IScope;
+    let form: angular.IFormController;
     let budget: Budget;
     let configService: ConfigService;
     let config: Config;
     let budgetComponent: BudgetComponent;
     let componentOptions: angular.IComponentOptions;
 
-    beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$http_, _$q_, _budgetDirective_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _budgetDirective_, _ConfigService_) => {
         $http = _$http_;
+        $scope = _$rootScope_.$new();
         $httpBackend = _$httpBackend_;
 
         configService = _ConfigService_;
@@ -22,6 +25,7 @@ describe('BudgetComponent', () => {
         $httpBackend.whenGET(`${config.budgetApiUrl}/budgets/current`)
             .respond(budget);
 
+        form = jasmine.createSpyObj<angular.IFormController>('form', ['$valid']);
         componentOptions = _budgetDirective_[0];
         budgetComponent = _$controller_(BudgetComponent);
     }));
@@ -59,82 +63,11 @@ describe('BudgetComponent', () => {
         $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budget)
             .respond({});
 
-        budgetComponent.save();
+        form.$valid = true;
+        budgetComponent.save(form);;
         $httpBackend.flush();
 
         expect($http.put).toHaveBeenCalledWith(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget);
-    });
-
-    it('should sum up line item estimates', () => {
-        budget.categories = createCategories();
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.estimateTotal).toBe(300.88);
-    });
-
-    it('should sum up line item actuals', () => {
-        budget.categories = createCategories();
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.actualTotal).toBe(411.74)
-    });
-
-    it('should have zero actual total', () => {
-        budget.categories = undefined;
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.actualTotal).toBe(0);
-    });
-
-    it('should have zero estimate total', () => {
-        budget.categories = undefined;
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.estimateTotal).toBe(0);
-    });
-
-    it('should get estimate balance', () => {
-        budget.categories = createCategories();
-        budget.income = 234.5;
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.estimateBalance).toBe(-66.38);
-    });
-
-    it('should get actual balance', () => {
-        budget.categories = createCategories();
-        budget.income = 234.5;
-
-        budgetComponent.$onInit();
-        $httpBackend.flush();
-
-        expect(budgetComponent.actualBalance).toBe(-177.24);
-    });
-
-    it('should have zero estimate total if no budget', () => {
-        expect(budgetComponent.estimateTotal).toBe(0);
-    });
-
-    it('should have zero actual total if no budget', () => {
-        expect(budgetComponent.actualTotal).toBe(0);
-    });
-
-    it('should have zero estimate balance if no budget', () => {
-        expect(budgetComponent.estimateBalance).toBe(0);
-    });
-
-    it('should have zero actual balance if no budget', () => {
-        expect(budgetComponent.actualBalance).toBe(0);
     });
 
     it('should get default name if no category name', () => {
@@ -144,7 +77,18 @@ describe('BudgetComponent', () => {
         budgetComponent.addCategory();
         budgetComponent.budget.categories[0].name = undefined;
         expect(budgetComponent.getCategoryHeading(budgetComponent.budget.categories[0])).toBe('New Category');
-    })
+    });
+
+    it('should not save invalid budget', () => {
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        form.$valid = false;
+        budgetComponent.save(form);
+        $scope.$digest();
+
+        $httpBackend.verifyNoOutstandingRequest();
+    });
 
     function createCategories(): Category[] {
         return [
