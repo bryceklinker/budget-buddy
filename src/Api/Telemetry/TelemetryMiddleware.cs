@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -18,15 +19,23 @@ namespace BudgetBuddy.Api.Telemetry
 
         public async Task Invoke(HttpContext httpContext)
         {
-            await _telemetryService.TrackEvent(httpContext);
+            try
+            {
+                await _telemetryService.TrackEvent(httpContext);
 
-            var stopWatch = new Stopwatch();
-            stopWatch.Start();
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
 
-            await _next.Invoke(httpContext);
-            stopWatch.Stop();
+                await _next.Invoke(httpContext);
+                stopWatch.Stop();
 
-            await _telemetryService.TrackTiming(httpContext.Request.GetDisplayUrl(), stopWatch.Elapsed);
+                await _telemetryService.TrackTiming(httpContext.Request.GetDisplayUrl(), stopWatch.Elapsed);
+            }
+            catch (Exception ex)
+            {
+                await _telemetryService.TrackException(httpContext, ex);
+                throw;
+            }
         }
     }
 }

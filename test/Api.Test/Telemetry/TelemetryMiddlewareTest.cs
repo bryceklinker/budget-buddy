@@ -6,14 +6,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Xunit;
 
+
 namespace BudgetBuddy.Api.Test.Telemetry
 {
+    
     public class TelemetryMiddlewareTest
     {
         private readonly TelemetryServiceStub _telemetryServiceStub;
         private readonly RequestDelegate _next;
         private readonly HttpContext _httpContext;
         private readonly TelemetryMiddleware _telemetryMiddleware;
+        private bool _throwException;
 
         public TelemetryMiddlewareTest()
         {
@@ -45,9 +48,31 @@ namespace BudgetBuddy.Api.Test.Telemetry
             Assert.NotEqual(TimeSpan.Zero, _telemetryServiceStub.TimingTimespan);
         }
 
+        [Fact]
+        public async Task Invoke_ShouldTrackExceptions()
+        {
+            _throwException = true;
+            Exception thrownException = null;
+
+            try
+            {
+                await _telemetryMiddleware.Invoke(_httpContext);
+            }
+            catch (Exception ex)
+            {
+                thrownException = ex;
+            }
+            
+            Assert.Same(thrownException, _telemetryServiceStub.Exception);
+            Assert.Same(_httpContext, _telemetryServiceStub.ExceptionContext);
+        }
+
         private Task Next(HttpContext context)
         {
-            return Task.CompletedTask;
+            if (_throwException)
+                throw new Exception();
+
+            return Task.CompletedTask;;
         }
     }
 }

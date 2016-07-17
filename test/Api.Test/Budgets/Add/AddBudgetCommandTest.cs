@@ -3,27 +3,28 @@ using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
-using BudgetBuddy.Test.Utilities.Factories;
-using Xunit;
-using System.Linq;
-using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Api.Test.Budgets.Shared.Asserts;
+using BudgetBuddy.Test.Utilities.Stubs.General;
+using System.Linq;
+using Xunit;
+
 
 namespace BudgetBuddy.Api.Test.Budgets.Add
 {
+    
     public class AddBudgetCommandTest
     {
         private readonly BudgetViewModel _budgetViewModel;
-        private readonly BudgetContext _budgetContext;
+        private readonly InMemoryRepository<Budget> _budgetRepository;
         private readonly AddBudgetCommand _addBudgetCommand;
 
         public AddBudgetCommandTest()
         {
             _budgetViewModel = new BudgetViewModel {Categories = new BudgetCategoryViewModel[0]};
-            _budgetContext = DbContextFactory.Create<BudgetContext>();
-            _addBudgetCommand = new AddBudgetCommand(_budgetContext);
+            _budgetRepository = new InMemoryRepository<Budget>();
+            _addBudgetCommand = new AddBudgetCommand(_budgetRepository);
         }
 
         [Fact]
@@ -43,7 +44,6 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
             {
                 new BudgetCategoryViewModel
                 {
-                    Id = Guid.NewGuid(),
                     Name = "Home",
                     LineItems = new[]
                     {
@@ -57,34 +57,9 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
         }
 
         [Fact]
-        public async Task Execute_ShouldUseExistingCategory()
-        {
-            var existingCategory = new Category {Id = Guid.NewGuid(), Name = "Something"};
-            _budgetContext.Add(existingCategory);
-            await _budgetContext.SaveChangesAsync();
-
-            _budgetViewModel.Categories = new[]
-            {
-                new BudgetCategoryViewModel
-                {
-                    Id = existingCategory.Id,
-                    Name = existingCategory.Name,
-                    LineItems = new[]
-                    {
-                        new BudgetLineItemViewModel {Actual = 5, Estimate = 8, Name = "Home"}
-                    }
-                }
-            };
-
-            await _addBudgetCommand.Execute(_budgetViewModel);
-            Assert.Equal(1, _budgetContext.Categories.Count());
-        }
-
-        [Fact]
         public async Task Execute_ShouldThrowInvalidOperation()
         {
-            _budgetContext.Add(new Budget {StartDate = new DateTime(9, 4, 1)});
-            await _budgetContext.SaveChangesAsync();
+            await _budgetRepository.Insert(new Budget {StartDate = new DateTime(9, 4, 1)});
 
             try
             {
@@ -106,7 +81,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Add
 
         private void AssertAddedBudget(BudgetViewModel viewModel, Guid budgetId)
         {
-            var budget = _budgetContext.Budgets.Single(b => b.Id == budgetId);
+            var budget = _budgetRepository.Entities.Single(b => b.Id == budgetId);
             BudgetAssert.Equal(viewModel, budget);
         }
     }

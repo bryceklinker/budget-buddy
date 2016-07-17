@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using System.Linq;
 using BudgetBuddy.Api.Budgets.Shared.Mappers;
-using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
-using Microsoft.EntityFrameworkCore;
+using BudgetBuddy.Api.General.Storage;
 
 namespace BudgetBuddy.Api.Budgets.Add
 {
@@ -19,39 +18,36 @@ namespace BudgetBuddy.Api.Budgets.Add
     [Transient(typeof(IAddBudgetCommand))]
     public class AddBudgetCommand : IAddBudgetCommand
     {
-        private readonly BudgetContext _budgetContext;
+        private readonly IRepository<Budget> _budgetRepository;
         private readonly BudgetMapper _budgetMapper;
 
-        public AddBudgetCommand(BudgetContext budgetContext)
+        public AddBudgetCommand(IRepository<Budget> budgetRepository)
         {
-            _budgetContext = budgetContext;
+            _budgetRepository = budgetRepository;
             _budgetMapper = new BudgetMapper();
         }
 
         public async Task<Guid> Execute(BudgetViewModel budgetViewModel)
         {
             if (await IsExistingBudget(budgetViewModel))
-            {
                 throw new InvalidOperationException($"Budget for {budgetViewModel.Month}/{budgetViewModel.Year} already exists");
-            }
 
             var budget = CreateBudget(budgetViewModel);
-            _budgetContext.Add(budget);
-            await _budgetContext.SaveChangesAsync();
+            await _budgetRepository.Insert(budget);
             return budget.Id;
         }
 
-        private Task<bool> IsExistingBudget(BudgetViewModel viewModel)
+        private async Task<bool> IsExistingBudget(BudgetViewModel viewModel)
         {
-            return _budgetContext.Budgets
+            var budgets = await _budgetRepository.GetAll();
+            return budgets
                 .Where(b => b.StartDate.Month == viewModel.Month)
-                .Where(b => b.StartDate.Year == viewModel.Year)
-                .AnyAsync();
+                .Any(b => b.StartDate.Year == viewModel.Year);
         }
 
         private Budget CreateBudget(BudgetViewModel viewModel)
         {
-            var budget = new Budget {LineItems = new List<BudgetLineItem>()};
+            var budget = new Budget();
             _budgetMapper.Map(viewModel, budget);
             return budget;
         }

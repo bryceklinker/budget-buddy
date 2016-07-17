@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
@@ -12,67 +11,25 @@ namespace BudgetBuddy.Api.Budgets.Shared.Mappers
         {
             budget.StartDate = new DateTime(viewModel.Year, viewModel.Month, 1);
             budget.Income = viewModel.Income;
-            MapLineItems(viewModel.Categories, budget.LineItems);
+            budget.Categories = viewModel.Categories.Select(Map).ToList();
         }
 
-        private static void MapLineItems(IEnumerable<BudgetCategoryViewModel> categoryViewModels, ICollection<BudgetLineItem> lineItems)
-        {
-            foreach (var categoryViewModel in categoryViewModels)
-            {
-                var categoryLineItems = lineItems.Where(c => c.Category.Name == categoryViewModel.Name).ToList();
-                if (categoryLineItems.Any())
-                    MapLineItems(categoryViewModel.LineItems, categoryLineItems);
-                else
-                    AddLineItems(categoryViewModel.LineItems, categoryViewModel, lineItems);
-            }
-        }
-
-        private static void AddLineItems(BudgetLineItemViewModel[] lineItemViewModels, BudgetCategoryViewModel categoryViewModel, ICollection<BudgetLineItem> lineItems)
-        {
-            foreach (var lineItemViewModel in lineItemViewModels)
-                AddLineItem(lineItemViewModel, categoryViewModel, lineItems);
-        }
-
-        private static void AddLineItem(BudgetLineItemViewModel lineItemViewModel, BudgetCategoryViewModel categoryViewModel, ICollection<BudgetLineItem> lineItems)
-        {
-            var lineItem = CreateLineItem(lineItemViewModel, categoryViewModel);
-            lineItems.Add(lineItem);
-        }
-
-        private static void MapLineItems(BudgetLineItemViewModel[] lineItemViewModels, List<BudgetLineItem> lineItems)
-        {
-            foreach (var lineItemViewModel in lineItemViewModels)
-            {
-                var lineItem = lineItems.SingleOrDefault(l => l.Name == lineItemViewModel.Name);
-                if (lineItem != null)
-                    MapLineItem(lineItemViewModel, lineItem);
-            }
-        }
-
-        private static void MapLineItem(BudgetLineItemViewModel lineItemViewModel, BudgetLineItem lineItem)
-        {
-            lineItem.Actual = lineItemViewModel.Actual;
-            lineItem.Estimate = lineItemViewModel.Estimate;
-        }
-
-        private static BudgetLineItem CreateLineItem(BudgetLineItemViewModel lineItem, BudgetCategoryViewModel category)
-        {
-            return new BudgetLineItem
-            {
-                Actual = lineItem.Actual,
-                Estimate = lineItem.Estimate,
-                Name = lineItem.Name,
-                Id = lineItem.Id,
-                Category = CreateCategory(category)
-            };
-        }
-
-        private static Category CreateCategory(BudgetCategoryViewModel category)
+        private static Category Map(BudgetCategoryViewModel viewModel)
         {
             return new Category
             {
-                Id = category.Id,
-                Name = category.Name
+                Name = viewModel.Name,
+                BudgetLineItems = viewModel.LineItems.Select(Map).ToList()
+            };
+        }
+
+        private static BudgetLineItem Map(BudgetLineItemViewModel viewModel)
+        {
+            return new BudgetLineItem
+            {
+                Name = viewModel.Name,
+                Actual = viewModel.Actual,
+                Estimate = viewModel.Estimate
             };
         }
     }

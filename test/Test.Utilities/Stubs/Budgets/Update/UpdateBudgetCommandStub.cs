@@ -11,7 +11,7 @@ namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.Update
         public Task Execute(BudgetViewModel budgetViewModel)
         {
             BudgetViewModel = budgetViewModel;
-            return Task.CompletedTask;
+            return Task.CompletedTask;;
         }
     }
 }

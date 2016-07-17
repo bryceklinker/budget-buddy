@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
+using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Budgets.Exists
 {
@@ -14,18 +14,19 @@ namespace BudgetBuddy.Api.Budgets.Exists
     [Transient(typeof(IBudgetExistsQuery))]
     public class BudgetExistsQuery : IBudgetExistsQuery
     {
-        private readonly BudgetContext _budgetContext;
+        private readonly IRepository<Budget> _budgetRepository;
 
-        public BudgetExistsQuery(BudgetContext budgetContext)
+        public BudgetExistsQuery(IRepository<Budget> budgetRepository)
         {
-            _budgetContext = budgetContext;
+            _budgetRepository = budgetRepository;
         }
 
-        public Task<bool> Execute(int month, int year)
+        public async Task<bool> Execute(int month, int year)
         {
-            return _budgetContext.Budgets
+            var budgets = await _budgetRepository.GetAll();
+            return budgets
                 .Where(b => b.StartDate.Month == month)
-                .AnyAsync(b => b.StartDate.Year == year);
+                .Any(b => b.StartDate.Year == year);
         }
     }
 }

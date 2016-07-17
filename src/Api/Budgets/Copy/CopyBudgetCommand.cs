@@ -2,12 +2,11 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.General;
+using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Hangfire.Common;
-using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Budgets.Copy
 {
@@ -19,52 +18,87 @@ namespace BudgetBuddy.Api.Budgets.Copy
     [Transient(typeof(ICopyBudgetCommand))]
     public class CopyBudgetCommand : ICopyBudgetCommand
     {
-        public static readonly Job Job = new Job(typeof(ICopyBudgetCommand), typeof(ICopyBudgetCommand).GetMethod("Execute"));
         public const string JobId = "budgets-copy-or-create-next";
-        private readonly BudgetContext _budgetContext;
+        private readonly IRepository<Budget> _budgetRepository;
         private readonly IDateTimeService _dateTimeService;
 
-        public CopyBudgetCommand(BudgetContext budgetContext, IDateTimeService dateTimeService)
+        public static Job CreateCopyJob()
         {
-            _budgetContext = budgetContext;
+            return new Job(typeof(ICopyBudgetCommand), typeof(ICopyBudgetCommand).GetMethod("Execute"));
+        }
+
+        public CopyBudgetCommand(IRepository<Budget> budgetRepository, IDateTimeService dateTimeService)
+        {
+            _budgetRepository = budgetRepository;
             _dateTimeService = dateTimeService;
         }
 
         public async Task Execute()
         {
-            var currentBudget = await _budgetContext.Budgets
-                .OrderByDescending(b => b.StartDate)
-                .FirstOrDefaultAsync();
-
-            var newBudget = currentBudget != null ? Copy(currentBudget) : CreateBudget();
-            _budgetContext.Add(newBudget);
-            await _budgetContext.SaveChangesAsync();
+            var currentBudget = await GetCurrentBudget();
+            if (currentBudget == null)
+                await CreateCurrentBudget();
+            else
+                await CopyCurrentBudgetForNextMonth(currentBudget);
         }
 
-        private Budget CreateBudget()
+        private async Task<Budget> GetCurrentBudget()
         {
-            return new Budget
+            var budgets = await _budgetRepository.GetAll();
+            return budgets.OrderByDescending(b => b.StartDate)
+                .FirstOrDefault();
+        }
+
+        private async Task CreateCurrentBudget()
+        {
+            var currentBudget = new Budget
             {
                 StartDate = new DateTime(_dateTimeService.Now.Year, _dateTimeService.Now.Month, 1)
             };
+            await _budgetRepository.Insert(currentBudget);
         }
 
-        private Budget Copy(Budget budget)
+        private async Task CopyCurrentBudgetForNextMonth(Budget currentBudget)
+        {
+            var nextMonthsBudget = await GetNextMonthsBudget();
+            if (nextMonthsBudget != null)
+                return;
+
+            nextMonthsBudget = Copy(currentBudget);
+            await _budgetRepository.Insert(nextMonthsBudget);
+        }
+
+        private async Task<Budget> GetNextMonthsBudget()
+        {
+            var nextStartDate = _dateTimeService.Now.AddMonths(1);
+            var budgets = await _budgetRepository.GetAll();
+            return budgets.FirstOrDefault(b => b.StartDate == new DateTime(nextStartDate.Year, nextStartDate.Month, 1));
+        }
+
+        private static Budget Copy(Budget budget)
         {
             return new Budget
             {
                 StartDate = budget.StartDate.AddMonths(1),
-                LineItems = budget.LineItems?.Select(Copy).ToList()
+                Categories = budget.Categories.Select(Copy).ToList()
             };
         }
 
-        private BudgetLineItem Copy(BudgetLineItem budgetLineItem)
+        private static Category Copy(Category category)
+        {
+            return new Category
+            {
+                Name = category.Name,
+                BudgetLineItems = category.BudgetLineItems.Select(Copy).ToList()
+            };
+        }
+
+        private static BudgetLineItem Copy(BudgetLineItem budgetLineItem)
         {
             return new BudgetLineItem
             {
                 Name = budgetLineItem.Name,
-                Estimate = budgetLineItem.Estimate,
-                Category = budgetLineItem.Category
+                Estimate = budgetLineItem.Estimate
             };
         }
     }

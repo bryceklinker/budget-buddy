@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
-using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
+using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Budgets.Get
 {
@@ -15,40 +15,35 @@ namespace BudgetBuddy.Api.Budgets.Get
     [Transient(typeof(IGetBudgetQuery))]
     public class GetBudgetQuery : IGetBudgetQuery
     {
-        private readonly BudgetContext _budgetContext;
+        private readonly IRepository<Budget> _budgetRepository;
 
-        public GetBudgetQuery(BudgetContext budgetContext)
+        public GetBudgetQuery(IRepository<Budget> budgetRepository)
         {
-            _budgetContext = budgetContext;
+            _budgetRepository = budgetRepository;
         }
 
-        public Task<BudgetViewModel> Execute(int month, int year)
+        public async Task<BudgetViewModel> Execute(int month, int year)
         {
-            return _budgetContext.Budgets
+            var budgets = await _budgetRepository.GetAll();
+            return budgets
                 .Where(b => b.StartDate.Month == month)
                 .Where(b => b.StartDate.Year == year)
                 .Select(b => new BudgetViewModel
                 {
                     Income = b.Income,
                     StartDate = b.StartDate,
-                    Categories = b.LineItems
-                        .GroupBy(l => new { l.Category.Id, l.Category.Name })
-                        .Select(c => new BudgetCategoryViewModel
+                    Categories = b.Categories.Select(c => new BudgetCategoryViewModel
+                    {
+                        Name = c.Name,
+                        LineItems = c.BudgetLineItems.Select(i => new BudgetLineItemViewModel
                         {
-                            Id = c.Key.Id,
-                            Name = c.Key.Name,
-                            LineItems = c.Select(l => new BudgetLineItemViewModel
-                            {
-                                Name = l.Name,
-                                Id = l.Id,
-                                Actual = l.Actual,
-                                Estimate = l.Estimate
-                            })
-                                .ToArray()
-                        })
-                        .ToArray()
+                            Name = i.Name,
+                            Actual = i.Actual,
+                            Estimate = i.Estimate
+                        }).ToArray()
+                    }).ToArray()
                 })
-                .SingleOrDefaultAsync();
+                .SingleOrDefault();
         }
     }
 }

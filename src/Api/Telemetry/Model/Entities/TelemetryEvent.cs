@@ -1,23 +1,18 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using BudgetBuddy.Api.General.Storage;
 
 namespace BudgetBuddy.Api.Telemetry.Model.Entities
 {
-    public class TelemetryEvent
+    public class TelemetryEvent : IDocument
     {
-        [Key]
         public Guid Id { get; set; }
 
-        [Required]
         public DateTime Timestamp { get; set; }
 
-        [MaxLength(int.MaxValue)]
         public string Url { get; set; }
 
-        [MaxLength(255)]
         public string Feature { get; set; }
 
-        [MaxLength(255)]
         public string HttpMethod { get; set; }
     }
 }

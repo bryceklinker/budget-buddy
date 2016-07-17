@@ -5,8 +5,10 @@ using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
+
 namespace BudgetBuddy.Infrastructure.Test.DependencyInjection
 {
+    
     public class DependencyRegistrarTest
     {
         private readonly Assembly _assembly;

@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using System.Linq;
 using BudgetBuddy.Api.Budgets.Shared.Mappers;
-using BudgetBuddy.Api.Budgets.Shared.Model;
+using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
+using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Budgets.Update
 {
@@ -16,24 +16,24 @@ namespace BudgetBuddy.Api.Budgets.Update
     [Transient(typeof(IUpdateBudgetCommand))]
     public class UpdateBudgetCommand : IUpdateBudgetCommand
     {
-        private readonly BudgetContext _budgetContext;
+        private readonly IRepository<Budget> _budgetRepository;
         private readonly BudgetMapper _budgetMapper;
 
-        public UpdateBudgetCommand(BudgetContext budgetContext)
+        public UpdateBudgetCommand(IRepository<Budget> budgetRepository)
         {
-            _budgetContext = budgetContext;
+            _budgetRepository = budgetRepository;
             _budgetMapper = new BudgetMapper();
         }
 
         public async Task Execute(BudgetViewModel budgetViewModel)
         {
-            var budget = await _budgetContext.Budgets
+            var budgets = await _budgetRepository.GetAll();
+            var budget = budgets
                 .Where(b => b.StartDate.Month == budgetViewModel.Month)
-                .Where(b => b.StartDate.Year == budgetViewModel.Year)
-                .SingleAsync();
+                .Single(b => b.StartDate.Year == budgetViewModel.Year);
 
             _budgetMapper.Map(budgetViewModel, budget);
-            await _budgetContext.SaveChangesAsync();
+            await _budgetRepository.Update(budget);
         }
     }
 }

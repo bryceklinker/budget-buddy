@@ -11,10 +11,12 @@ using BudgetBuddy.Test.Utilities.Stubs.Budgets.Get;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Update;
 using BudgetBuddy.Test.Utilities.Stubs.General;
 using Microsoft.AspNetCore.Mvc;
+
 using Xunit;
 
 namespace BudgetBuddy.Api.Test.Budgets
 {
+    
     public class BudgetControllerTest
     {
         private readonly BudgetController _budgetController;
@@ -144,6 +146,7 @@ namespace BudgetBuddy.Api.Test.Budgets
         public void AddBudget_ShouldGetBudgetFromBody()
         {
             var fromBody = _budgetController.GetType()
+                .GetTypeInfo()
                 .GetMethod("AddBudget")
                 .GetParameters()
                 .Last()

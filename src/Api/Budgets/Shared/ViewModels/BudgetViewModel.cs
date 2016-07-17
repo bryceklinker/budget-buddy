@@ -10,5 +10,10 @@ namespace BudgetBuddy.Api.Budgets.Shared.ViewModels
         public int Year => StartDate.Year;
 
         public BudgetCategoryViewModel[] Categories { get; set; }
+
+        public BudgetViewModel()
+        {
+            Categories = new BudgetCategoryViewModel[0];
+        }
     }
 }

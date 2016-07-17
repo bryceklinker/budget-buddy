@@ -1,19 +1,14 @@
 ﻿using System.Reflection;
 using BudgetBuddy.Api.Budgets.Copy;
-using BudgetBuddy.Api.Budgets.Shared.Model;
 using BudgetBuddy.Api.Telemetry;
-using BudgetBuddy.Api.Telemetry.Model;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Hangfire;
-using Hangfire.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 namespace BudgetBuddy.Api.Bootstrap
 {
@@ -43,11 +38,7 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             services.AddSingleton(typeof(IConfiguration), Configuration)
                 .AddCors(o => o.AddPolicy(CorsPolicyName, b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()))
-                .AddHangfire(g => g.UseDefaultActivator().UseSqlServerStorage(Configuration["Hangfire:ConnectionString"]))
-                .AddEntityFramework()
-                .AddEntityFrameworkSqlServer()
-                .AddDbContext<BudgetContext>(o => o.UseSqlServer(Configuration["Budgets:ConnectionString"]))
-                .AddDbContext<TelemetryContext>(o => o.UseSqlServer(Configuration["Telemetry:ConnectionString"]))
+                //.AddHangfire(g => g.UseSqlServerStorage(Configuration["Hangfire:ConnectionString"]))
                 .AddMvc();
             _dependencyRegistrar.Register(services);
         }
@@ -58,15 +49,15 @@ namespace BudgetBuddy.Api.Bootstrap
                 .UseCors(CorsPolicyName)
                 .UseFileServer("/client")
                 .UseDefaultFiles("/client")
-                .UseHangfireDashboard()
-                .UseHangfireServer(new BackgroundJobServerOptions
-                {
-                    Activator = new AspNetCoreJobActivator(app.ApplicationServices.GetService<IServiceScopeFactory>())
-                })
+                //.UseHangfireDashboard()
+                //.UseHangfireServer(new BackgroundJobServerOptions
+                //{
+                //    Activator = new AspNetCoreJobActivator(app.ApplicationServices.GetService<IServiceScopeFactory>())
+                //})
                 .UseMvc();
 
             var recurringManager = new RecurringJobManager();
-            recurringManager.AddOrUpdate(CopyBudgetCommand.JobId, CopyBudgetCommand.Job, Cron.Monthly());
+            recurringManager.AddOrUpdate(CopyBudgetCommand.JobId, CopyBudgetCommand.CreateCopyJob(), Cron.Monthly());
             BackgroundJob.Enqueue<ICopyBudgetCommand>(command => command.Execute());
         }
 

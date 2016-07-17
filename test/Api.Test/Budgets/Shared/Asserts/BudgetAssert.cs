@@ -3,6 +3,7 @@ using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using Xunit;
 
+
 namespace BudgetBuddy.Api.Test.Budgets.Shared.Asserts
 {
     public static class BudgetAssert
@@ -12,9 +13,25 @@ namespace BudgetBuddy.Api.Test.Budgets.Shared.Asserts
             Assert.Equal(viewModel.Month, budget.StartDate.Month);
             Assert.Equal(viewModel.Year, budget.StartDate.Year);
             Assert.Equal(viewModel.Income, budget.Income);
-            Assert.Equal(viewModel.Categories.Length, budget.LineItems.GroupBy(l => l.Category.Id).Count());
+            Assert.Equal(viewModel.Categories.Length, budget.Categories.Count);
             foreach (var categoryViewModel in viewModel.Categories)
-                BudgetLineItemAssert.Equal(categoryViewModel, budget.LineItems);
+            {
+                var category = budget.Categories.Single(c => c.Name == categoryViewModel.Name);
+                CategoryAssert.Equal(categoryViewModel, category);
+            }
+        }
+
+        public static void EqualWithoutActuals(Budget expected, Budget actual)
+        {
+            Assert.Equal(expected.StartDate.AddMonths(1), actual.StartDate);
+            Assert.NotEqual(expected.Id, actual.Id);
+            Assert.Equal(expected.Categories.Count, actual.Categories.Count);
+
+            foreach (var category in expected.Categories)
+            {
+                var actualCategory = actual.Categories.Single(c => c.Name == category.Name);
+                CategoryAssert.EqualWithoutActuals(category, actualCategory);
+            }
         }
     }
 }

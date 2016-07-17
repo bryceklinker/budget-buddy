@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using BudgetBuddy.Api.General.Storage;
 
 namespace BudgetBuddy.Api.Budgets.Shared.Model.Entities
 {
-    public class Budget
+    public class Budget : IDocument
     {
-        [Key]
         public Guid Id { get; set; }
 
-        [Required]
         public DateTime StartDate { get; set; }
 
         public decimal Income { get; set; }
 
-        public virtual ICollection<BudgetLineItem> LineItems { get; set; }
+        public List<Category> Categories { get; set; }
 
         public Budget()
         {
-            LineItems = new List<BudgetLineItem>();
+            Categories = new List<Category>();
         }
     }
 }
