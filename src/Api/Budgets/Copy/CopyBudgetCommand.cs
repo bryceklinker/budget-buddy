@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BudgetBuddy.Api.Budgets.Copy.ViewModels;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
-using BudgetBuddy.Api.General;
 using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 
@@ -10,7 +10,7 @@ namespace BudgetBuddy.Api.Budgets.Copy
 {
     public interface ICopyBudgetCommand
     {
-        Task Execute();
+        Task Execute(CopyBudgetViewModel viewModel);
     }
 
     [Transient(typeof(ICopyBudgetCommand))]
@@ -18,61 +18,35 @@ namespace BudgetBuddy.Api.Budgets.Copy
     {
         public const string JobId = "budgets-copy-or-create-next";
         private readonly IRepository<Budget> _budgetRepository;
-        private readonly IDateTimeService _dateTimeService;
 
-        public CopyBudgetCommand(IRepository<Budget> budgetRepository, IDateTimeService dateTimeService)
+        public CopyBudgetCommand(IRepository<Budget> budgetRepository)
         {
             _budgetRepository = budgetRepository;
-            _dateTimeService = dateTimeService;
         }
 
-        public async Task Execute()
+        public async Task Execute(CopyBudgetViewModel viewModel)
         {
-            var currentBudget = await GetCurrentBudget();
-            if (currentBudget == null)
-                await CreateCurrentBudget();
-            else
-                await CopyCurrentBudgetForNextMonth(currentBudget);
+            var fromBudget = await GetBudget(viewModel.FromYear, viewModel.FromMonth);
+            var toBudget = await GetBudget(viewModel.ToYear, viewModel.ToMonth);
+            if (toBudget != null)
+                throw new InvalidOperationException();
+
+            toBudget = Copy(fromBudget, viewModel.ToYear, viewModel.ToMonth);
+            await _budgetRepository.Insert(toBudget);
         }
 
-        private async Task<Budget> GetCurrentBudget()
+        private async Task<Budget> GetBudget(int year, int month)
         {
             var budgets = await _budgetRepository.GetAll();
-            return budgets.OrderByDescending(b => b.StartDate)
-                .FirstOrDefault();
+            return budgets
+                .SingleOrDefault(b => b.StartDate == new DateTime(year, month, 1));
         }
 
-        private async Task CreateCurrentBudget()
-        {
-            var currentBudget = new Budget
-            {
-                StartDate = new DateTime(_dateTimeService.Now.Year, _dateTimeService.Now.Month, 1)
-            };
-            await _budgetRepository.Insert(currentBudget);
-        }
-
-        private async Task CopyCurrentBudgetForNextMonth(Budget currentBudget)
-        {
-            var nextMonthsBudget = await GetNextMonthsBudget();
-            if (nextMonthsBudget != null)
-                return;
-
-            nextMonthsBudget = Copy(currentBudget);
-            await _budgetRepository.Insert(nextMonthsBudget);
-        }
-
-        private async Task<Budget> GetNextMonthsBudget()
-        {
-            var nextStartDate = _dateTimeService.Now.AddMonths(1);
-            var budgets = await _budgetRepository.GetAll();
-            return budgets.FirstOrDefault(b => b.StartDate == new DateTime(nextStartDate.Year, nextStartDate.Month, 1));
-        }
-
-        private static Budget Copy(Budget budget)
+        private static Budget Copy(Budget budget, int toYear, int toMonth)
         {
             return new Budget
             {
-                StartDate = budget.StartDate.AddMonths(1),
+                StartDate = new DateTime(toYear, toMonth, 1),
                 Categories = budget.Categories.Select(Copy).ToList()
             };
         }

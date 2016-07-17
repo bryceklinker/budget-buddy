@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets;
+using BudgetBuddy.Api.Budgets.Copy.ViewModels;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Add;
@@ -100,8 +101,9 @@ namespace BudgetBuddy.Api.Test.Budgets
         [Fact]
         public async Task CopyBudget_ShouldBeOk()
         {
-            var result = await _budgetController.CopyBudget();
-            Assert.True(_copyBudgetCommand.IsExecuted);
+            var viewModel = new CopyBudgetViewModel();
+            var result = await _budgetController.CopyBudget(viewModel);
+            Assert.Same(viewModel, _copyBudgetCommand.ViewModel);
             Assert.IsType<OkResult>(result);
         }
 

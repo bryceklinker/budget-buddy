@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
 using BudgetBuddy.Api.Budgets.Copy;
+using BudgetBuddy.Api.Budgets.Copy.ViewModels;
 using BudgetBuddy.Api.Budgets.Exists;
 using BudgetBuddy.Api.Budgets.Get;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
@@ -57,9 +58,9 @@ namespace BudgetBuddy.Api.Budgets
         }
 
         [HttpPost("copy")]
-        public async Task<IActionResult> CopyBudget()
+        public async Task<IActionResult> CopyBudget([FromBody] CopyBudgetViewModel viewModel)
         {
-            await _copyBudgetCommand.Execute();
+            await _copyBudgetCommand.Execute(viewModel);
             return Ok();
         }
     }

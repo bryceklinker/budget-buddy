@@ -20,18 +20,5 @@ namespace BudgetBuddy.Api.Test.Budgets.Shared.Asserts
                 CategoryAssert.Equal(categoryViewModel, category);
             }
         }
-
-        public static void EqualWithoutActuals(Budget expected, Budget actual)
-        {
-            Assert.Equal(expected.StartDate.AddMonths(1), actual.StartDate);
-            Assert.NotEqual(expected.Id, actual.Id);
-            Assert.Equal(expected.Categories.Count, actual.Categories.Count);
-
-            foreach (var category in expected.Categories)
-            {
-                var actualCategory = actual.Categories.Single(c => c.Name == category.Name);
-                CategoryAssert.EqualWithoutActuals(category, actualCategory);
-            }
-        }
     }
 }

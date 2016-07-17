@@ -3,10 +3,36 @@
 </div>
 
 <div class="modal-body">
-    <div class="form-group">
-        <span class="form-label">Copy budget from: {{ $ctrl.fromDate | date:'yyyy-MM-dd' }}</span>
-        <uib-datepicker ng-model="$copy.fromDate" />
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                The budget you are viewing has not be created yet. Would you like to copy or create a new one from scratch?
+            </p>
+        </div>
     </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <p class="input-group" >
+                <input type="text" class="form-control"  uib-datepicker-popup="yyyy-MM-dd" is-open="$copy.isFromDateOpened" ng-model="$copy.fromDate" >
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-calendar" ng-click="$copy.isFromDateOpened = true">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </span>
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <p class="input-group" >
+                <input type="text" ng-disabled="true" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="$copy.toDate" is-open="$copy.isToDateOpened" >
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-calendar" ng-click="$copy.isToDateOpened = true">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </span>
+            </p>
+        </div>
+    </div>
+
 </div>
 
 <div class="modal-footer">
@@ -14,6 +40,9 @@
         <div class="btn-group ">
             <button class="btn btn-primary" type="button" ng-click="$copy.copy()">
                 Copy Budget
+            </button>
+            <button class="btn btn-primary" type="button" ng-click="$copy.create()">
+                Create New Budget
             </button>
         </div>
     </div>

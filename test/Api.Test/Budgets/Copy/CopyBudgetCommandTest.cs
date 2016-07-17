@@ -7,6 +7,7 @@ using BudgetBuddy.Infrastructure.DependencyInjection;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Stubs.General;
 using System.Linq;
+using BudgetBuddy.Api.Budgets.Copy.ViewModels;
 using BudgetBuddy.Api.Test.Budgets.Shared.Asserts;
 using Xunit;
 
@@ -17,58 +18,60 @@ namespace BudgetBuddy.Api.Test.Budgets.Copy
     public class CopyBudgetCommandTest
     {
         private readonly InMemoryRepository<Budget> _budgetRepository;
-        private readonly DateTimeServiceStub _dateTimeServiceStub;
         private readonly CopyBudgetCommand _copyBudgetCommand;
+        private readonly CopyBudgetViewModel _copyBudgetViewModel;
 
         public CopyBudgetCommandTest()
         {
+            _copyBudgetViewModel = new CopyBudgetViewModel();
             _budgetRepository = new InMemoryRepository<Budget>();
-            _dateTimeServiceStub = new DateTimeServiceStub();
 
-            _copyBudgetCommand = new CopyBudgetCommand(_budgetRepository, _dateTimeServiceStub);
-        }
-
-        [Fact]
-        public async Task Execute_ShouldCreateBudgetForNextMonth()
-        {
-            await _budgetRepository.Insert(CreateBudget(new DateTime(2015, 4, 1)));
-            await _budgetRepository.Insert(CreateBudget(new DateTime(2015, 5, 1)));
-            await _budgetRepository.Insert(CreateBudget(new DateTime(2015, 3, 1)));
-
-            await _copyBudgetCommand.Execute();
-            Assert.Equal(new DateTime(2015, 6, 1), _budgetRepository.Entities.OrderByDescending(b => b.StartDate).First().StartDate);
-        }
-
-        [Fact]
-        public async Task Execute_ShouldCreateBudgetForCurrentMonthAndYear()
-        {
-            _budgetRepository.Entities.Clear();
-
-            _dateTimeServiceStub.Now = new DateTime(2016, 3, 4);
-
-            await _copyBudgetCommand.Execute();
-            Assert.Equal(new DateTime(2016, 3, 1), _budgetRepository.Entities.OrderByDescending(b => b.StartDate).First().StartDate);
+            _copyBudgetCommand = new CopyBudgetCommand(_budgetRepository);
         }
 
         [Fact]
         public async Task Execute_ShouldCopyLineItemsFromExistingBudget()
         {
             var budget = CreatePopulatedBudget();
+
+            _copyBudgetViewModel.FromYear = 2016;
+            _copyBudgetViewModel.FromMonth = 5;
+
+            _copyBudgetViewModel.ToYear = 2016;
+            _copyBudgetViewModel.ToMonth = 7;
+
             await _budgetRepository.Insert(budget);
 
-            await _copyBudgetCommand.Execute();
-            var newBudget = _budgetRepository.Entities.OrderByDescending(b => b.StartDate).First();
-            BudgetAssert.EqualWithoutActuals(budget, newBudget);
+            await _copyBudgetCommand.Execute(_copyBudgetViewModel);
+            var newBudget = _budgetRepository.Entities
+                .Where(b => b.StartDate.Year == 2016)
+                .First(b => b.StartDate.Month == 7);
+
+            AssertBudgetEqual(budget, newBudget, 2016, 7);
         }
 
         [Fact]
-        public async Task Execute_ShouldNotCopyBudgetForNextMonthIfNextMonthsBudgetAlreadyExists()
+        public async Task Execute_ShouldThrowInvalidOperationIfBudgetAlreadyExists()
         {
-            _dateTimeServiceStub.Now = new DateTime(2016, 6, 1);
+            await _budgetRepository.Insert(CreateBudget(new DateTime(2016, 6, 1)));
             await _budgetRepository.Insert(CreateBudget(new DateTime(2016, 7, 1)));
 
-            await _copyBudgetCommand.Execute();
-            Assert.Equal(1, _budgetRepository.Entities.Count);
+            _copyBudgetViewModel.FromMonth = 6;
+            _copyBudgetViewModel.FromYear = 2016;
+            _copyBudgetViewModel.ToMonth = 7;
+            _copyBudgetViewModel.ToYear = 2016;
+
+            try
+            {
+                await _copyBudgetCommand.Execute(_copyBudgetViewModel);
+                Assert.False(true); // Ensure test fails if exception is not thrown.
+            }
+            catch (Exception ex)
+            {
+                Assert.Equal(2, _budgetRepository.Entities.Count);
+                Assert.IsType<InvalidOperationException>(ex);
+            }
+            
         }
 
         [Fact]
@@ -125,6 +128,19 @@ namespace BudgetBuddy.Api.Test.Budgets.Copy
                     }
                 }
             };
+        }
+
+        private static void AssertBudgetEqual(Budget budget, Budget newBudget, int toYear, int toMonth)
+        {
+            Assert.Equal(new DateTime(toYear, toMonth, 1), newBudget.StartDate);
+            Assert.NotEqual(budget.Id, newBudget.Id);
+            Assert.Equal(budget.Categories.Count, newBudget.Categories.Count);
+
+            foreach (var category in budget.Categories)
+            {
+                var actualCategory = newBudget.Categories.Single(c => c.Name == category.Name);
+                CategoryAssert.EqualWithoutActuals(category, actualCategory);
+            }
         }
     }
 }

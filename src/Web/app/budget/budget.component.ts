@@ -7,6 +7,7 @@ import {
 
 import './styles/budget';
 export class BudgetComponent implements angular.IComponentController {
+    static $inject = ['ConfigService', '$http', '$uibModal', 'toastr', '$stateParams']
     budget: Budget;
     year: number;
     month: number;
@@ -14,6 +15,7 @@ export class BudgetComponent implements angular.IComponentController {
     constructor(private configService: ConfigService,
         private $http: angular.IHttpService,
         private $uibModal: angular.ui.bootstrap.IModalService,
+        private toastr: angular.toastr.IToastrService,
         private $stateParams: angular.ui.IStateParamsService) {
 
     }
@@ -52,10 +54,11 @@ export class BudgetComponent implements angular.IComponentController {
         const month = this.budget.month;
         const year = this.budget.year;
         this.configService.getConfig()
-            .then(c => this.$http.put(`${c.budgetApiUrl}/budgets/${this.month}/${this.year}`, this.budget));
+            .then(c => this.$http.put(`${c.budgetApiUrl}/budgets/${this.year}/${this.month}`, this.budget))
+            .then(c => this.toastr.success('Budget saved successfully', 'Budget'));
     }
 }
-BudgetComponent.$inject = ['ConfigService', '$http', '$uibModal', '$stateParams']
+
 angular.module('budget-buddy')
     .component('budget', {
         controller: BudgetComponent,

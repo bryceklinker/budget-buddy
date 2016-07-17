@@ -6,13 +6,16 @@ describe('CopyBudgetComponent', () => {
     let $stateParams: angular.ui.IStateParamsService;
     let $state: angular.ui.IStateService
     let $httpBackend: angular.IHttpBackendService;
+    let $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance;
     let config: Config;
     let configService: ConfigService;
     let copyBudgetComponent: CopyBudgetComponent;
 
     beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$state_, _$stateParams_, _$q_, _ConfigService_) => {
-        $state = _$state_;
         $httpBackend = _$httpBackend_;
+
+        $state = _$state_;
+        spyOn($state, 'go').and.callFake(() => { });
 
         $stateParams = _$stateParams_;
         $stateParams['year'] = 2016;
@@ -22,9 +25,11 @@ describe('CopyBudgetComponent', () => {
         config = { budgetApiUrl: 'http://google.com/api' };
         spyOn(configService, 'getConfig').and.returnValue(_$q_.resolve(config));
 
+        $uibModalInstance = jasmine.createSpyObj<angular.ui.bootstrap.IModalServiceInstance>('modalInstance', ['close'])
         copyBudgetComponent = _$controller_(CopyBudgetComponent, {
             $state: $state,
             $stateParams: $stateParams,
+            $uibModalInstance: $uibModalInstance,
             ConfigService: configService
         });
     }));
@@ -34,22 +39,12 @@ describe('CopyBudgetComponent', () => {
         expect(copyBudgetComponent.fromDate).toEqual(new Date(2016, 6, 1));
     });
 
-    it('should copy old budget to specified year and month', () => {
-        $httpBackend.expectPOST(`${config.budgetApiUrl}/budgets/copy`, {
-            fromYear: 2016,
-            fromMonth: 6,
-            toYear: 2016,
-            toMonth: 8
-        }).respond({});
-
-        copyBudgetComponent.fromDate = new Date(2016, 5, 1);
-        copyBudgetComponent.copy();
-        $httpBackend.flush();
+    it('should have to date as state params date', () => {
+        copyBudgetComponent.$onInit();
+        expect(copyBudgetComponent.toDate).toEqual(new Date(2016, 7, 1));
     });
 
     it('should go to newly copied budget', () => {
-        spyOn($state, 'go').and.callFake(() => {});
-
         $httpBackend.expectPOST(`${config.budgetApiUrl}/budgets/copy`, {
             fromYear: 2016,
             fromMonth: 6,
@@ -57,14 +52,32 @@ describe('CopyBudgetComponent', () => {
             toMonth: 8
         }).respond({});
 
+        copyBudgetComponent.$onInit();
         copyBudgetComponent.fromDate = new Date(2016, 5, 1);
         copyBudgetComponent.copy();
         $httpBackend.flush();
-        
+
         expect($state.go).toHaveBeenCalledWith(BudgetRoute,
             { year: 2016, month: 8 },
             { reload: true }
         );
+        expect($uibModalInstance.close).toHaveBeenCalled();
+    });
+
+    it('should go to newly created budget', () => {
+        $httpBackend.expectPOST(`${config.budgetApiUrl}/budgets`, { startDate: new Date(2016, 7, 1) })
+            .respond({});
+
+        copyBudgetComponent.$onInit();
+        copyBudgetComponent.toDate = new Date(2016, 7, 1);
+        copyBudgetComponent.create();
+        $httpBackend.flush();
+
+        expect($state.go).toHaveBeenCalledWith(BudgetRoute,
+            { year: 2016, month: 8 },
+            { reload: true }
+        );
+        expect($uibModalInstance.close).toHaveBeenCalled();
     });
 
     afterEach(() => {

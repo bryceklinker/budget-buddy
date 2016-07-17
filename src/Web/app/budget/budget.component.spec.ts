@@ -8,18 +8,20 @@ describe('BudgetComponent', () => {
     let $scope: angular.IScope;
     let $stateParams: angular.ui.IStateParamsService;
     let $uibModal: angular.ui.bootstrap.IModalService;
+    let toastr: angular.toastr.IToastrService;
     let budget: Budget;
     let configService: ConfigService;
     let config: Config;
     let budgetComponent: BudgetComponent;
     let componentOptions: angular.IComponentOptions;
 
-    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _$stateParams_, _$uibModal_, _budgetDirective_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _$stateParams_, _$uibModal_, _toastr_, _budgetDirective_, _ConfigService_) => {
         $http = _$http_;
         $scope = _$rootScope_.$new();
         $httpBackend = _$httpBackend_;
         $stateParams = _$stateParams_;
         $uibModal = _$uibModal_;
+        toastr = _toastr_;
 
         configService = _ConfigService_;
         config = { budgetApiUrl: 'http://google.com/api' };
@@ -34,7 +36,8 @@ describe('BudgetComponent', () => {
         componentOptions = _budgetDirective_[0];
         budgetComponent = _$controller_(BudgetComponent, {
             $stateParams: $stateParams, 
-            $uibModal: $uibModal
+            $uibModal: $uibModal,
+            toastr: toastr
         });
     }));
 
@@ -69,13 +72,13 @@ describe('BudgetComponent', () => {
         $httpBackend.flush();
 
         budgetComponent.budget.income = 23;
-        $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget)
+        $httpBackend.expectPUT(`${config.budgetApiUrl}/budgets/${budget.year}/${budget.month}`, budgetComponent.budget)
             .respond({});
         
         budgetComponent.save();
         $httpBackend.flush();
 
-        expect($http.put).toHaveBeenCalledWith(`${config.budgetApiUrl}/budgets/${budget.month}/${budget.year}`, budgetComponent.budget);
+        expect($http.put).toHaveBeenCalledWith(`${config.budgetApiUrl}/budgets/${budget.year}/${budget.month}`, budgetComponent.budget);
     });
 
     it('should get default name if no category name', () => {
@@ -109,6 +112,20 @@ describe('BudgetComponent', () => {
             template: require('./templates/copy-budget.template')
         })
     });
+
+    it('should notify that budget was saved', () => {
+        spyOn(toastr, 'success').and.callThrough();
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        $httpBackend.whenPUT(`${config.budgetApiUrl}/budgets/${budget.year}/${budget.month}`, budgetComponent.budget)
+            .respond({});
+
+        budgetComponent.save();
+        $httpBackend.flush();
+
+        expect(toastr.success).toHaveBeenCalledWith('Budget saved successfully', 'Budget');
+    })
 
     function createCategories(): Category[] {
         return [
