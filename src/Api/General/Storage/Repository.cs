@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LiteDB;
+using Microsoft.Extensions.Configuration;
 
 namespace BudgetBuddy.Api.General.Storage
 {
@@ -17,9 +18,9 @@ namespace BudgetBuddy.Api.General.Storage
         private readonly string _connectionString;
         private readonly string _collectionName;
 
-        public Repository(string connectionString)
+        public Repository(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration["Budgets:ConnectionString"];
             _collectionName = $"{typeof(T).Name}s";
         }
 

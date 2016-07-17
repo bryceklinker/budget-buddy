@@ -79,20 +79,6 @@ namespace BudgetBuddy.Api.Test.Budgets.Copy
         }
 
         [Fact]
-        public void Job_ShouldUseCopyCommand()
-        {
-            var job = CopyBudgetCommand.CreateCopyJob();
-            Assert.Equal(typeof(ICopyBudgetCommand), job.Type);
-        }
-
-        [Fact]
-        public void Job_ShouldUseExecuteMethod()
-        {
-            var job = CopyBudgetCommand.CreateCopyJob();
-            Assert.Equal("Execute", job.Method.Name);
-        }
-
-        [Fact]
         public void JobId_ShouldBeBudgetCopyOrCreate()
         {
             Assert.Equal("budgets-copy-or-create-next", CopyBudgetCommand.JobId);

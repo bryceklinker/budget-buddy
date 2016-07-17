@@ -9,7 +9,7 @@ namespace BudgetBuddy.Api.Budgets.Get
 {
     public interface IGetBudgetQuery
     {
-        Task<BudgetViewModel> Execute(int month, int year);
+        Task<BudgetViewModel> Execute(int year, int month);
     }
 
     [Transient(typeof(IGetBudgetQuery))]
@@ -22,7 +22,7 @@ namespace BudgetBuddy.Api.Budgets.Get
             _budgetRepository = budgetRepository;
         }
 
-        public async Task<BudgetViewModel> Execute(int month, int year)
+        public async Task<BudgetViewModel> Execute(int year, int month)
         {
             var budgets = await _budgetRepository.GetAll();
             return budgets

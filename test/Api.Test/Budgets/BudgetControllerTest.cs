@@ -6,6 +6,7 @@ using BudgetBuddy.Api.Budgets;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Test.Utilities;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Add;
+using BudgetBuddy.Test.Utilities.Stubs.Budgets.Copy;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Exists;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Get;
 using BudgetBuddy.Test.Utilities.Stubs.Budgets.Update;
@@ -20,54 +21,36 @@ namespace BudgetBuddy.Api.Test.Budgets
     public class BudgetControllerTest
     {
         private readonly BudgetController _budgetController;
-        private readonly DateTimeServiceStub _dateTimeServiceStub;
         private readonly GetBudgetQueryStub _getBudgetQueryStub;
         private readonly AddBudgetCommandStub _addBudgetCommandStub;
         private readonly UpdateBudgetCommandStub _updateBudgetCommandStub;
         private readonly BudgetExistsQueryStub _budgetExistsQueryStub;
+        private readonly CopyBudgetCommandStub _copyBudgetCommand;
 
         public BudgetControllerTest()
         {
-            _dateTimeServiceStub = new DateTimeServiceStub();
             _getBudgetQueryStub = new GetBudgetQueryStub();
             _addBudgetCommandStub = new AddBudgetCommandStub();
             _updateBudgetCommandStub = new UpdateBudgetCommandStub();
             _budgetExistsQueryStub = new BudgetExistsQueryStub {Exists = true};
+            _copyBudgetCommand = new CopyBudgetCommandStub();
 
-            _budgetController = new BudgetController(_dateTimeServiceStub, _getBudgetQueryStub, _addBudgetCommandStub, _updateBudgetCommandStub, _budgetExistsQueryStub);
+            _budgetController = new BudgetController(_getBudgetQueryStub, _addBudgetCommandStub, _updateBudgetCommandStub, _budgetExistsQueryStub, _copyBudgetCommand);
         }
-
-        [Fact]
-        public async Task GetBudget_ShouldGetBudgetForCurrentMonth()
-        {
-            _dateTimeServiceStub.Now = new DateTime(2016, 6, 1);
-
-            await _budgetController.GetBudget();
-            Assert.Equal(6, _getBudgetQueryStub.Month);
-        }
-
-        [Fact]
-        public async Task GetBudget_ShouldGetBudgetForCurrentYear()
-        {
-            _dateTimeServiceStub.Now = new DateTime(2016, 2, 1);
-
-            await _budgetController.GetBudget();
-            Assert.Equal(2016, _getBudgetQueryStub.Year);
-        }
-
+        
         [Fact]
         public async Task GetBudget_ShouldReturnBudget()
         {
             _getBudgetQueryStub.Result = new BudgetViewModel();
 
-            var result = (OkObjectResult)await _budgetController.GetBudget();
+            var result = (OkObjectResult)await _budgetController.GetBudget(2016, 5);
             Assert.Same(_getBudgetQueryStub.Result, result.Value);
         }
 
         [Fact]
         public async Task GetBudget_ShouldGetBudgetForSpecifiedMonthAndYear()
         {
-            await _budgetController.GetBudget(5, 2012);
+            await _budgetController.GetBudget(year: 2012, month: 5);
             Assert.Equal(5, _getBudgetQueryStub.Month);
             Assert.Equal(2012, _getBudgetQueryStub.Year);
         }
@@ -77,10 +60,10 @@ namespace BudgetBuddy.Api.Test.Budgets
         {
             _budgetExistsQueryStub.Exists = false;
 
-            var result = await _budgetController.GetBudget();
+            var result = await _budgetController.GetBudget(2016, 6);
             Assert.IsType<NotFoundResult>(result);
-            Assert.Equal(_dateTimeServiceStub.Now.Month, _budgetExistsQueryStub.Month);
-            Assert.Equal(_dateTimeServiceStub.Now.Year, _budgetExistsQueryStub.Year);
+            Assert.Equal(6, _budgetExistsQueryStub.Month);
+            Assert.Equal(2016, _budgetExistsQueryStub.Year);
         }
 
         [Fact]
@@ -98,7 +81,7 @@ namespace BudgetBuddy.Api.Test.Budgets
             _budgetExistsQueryStub.Exists = true;
             var viewModel = new BudgetViewModel();
 
-            var result = await _budgetController.UpdateBudget(4, 2012, viewModel);
+            var result = await _budgetController.UpdateBudget(2012, 4, viewModel);
             Assert.Same(viewModel, _updateBudgetCommandStub.BudgetViewModel);
             Assert.IsType<OkResult>(result);
         }
@@ -108,10 +91,18 @@ namespace BudgetBuddy.Api.Test.Budgets
         {
             _budgetExistsQueryStub.Exists = false;
 
-            var result = await _budgetController.UpdateBudget(5, 2011, new BudgetViewModel());
+            var result = await _budgetController.UpdateBudget(2011, 5, new BudgetViewModel());
             Assert.IsType<NotFoundResult>(result);
             Assert.Equal(5, _budgetExistsQueryStub.Month);
             Assert.Equal(2011, _budgetExistsQueryStub.Year);
+        }
+
+        [Fact]
+        public async Task CopyBudget_ShouldBeOk()
+        {
+            var result = await _budgetController.CopyBudget();
+            Assert.True(_copyBudgetCommand.IsExecuted);
+            Assert.IsType<OkResult>(result);
         }
 
         [Fact]
@@ -125,14 +116,7 @@ namespace BudgetBuddy.Api.Test.Budgets
         public void GetBudget_ShouldAllowHttpGetWithMonthAndYear()
         {
             var httpGets = _budgetController.GetAttributes<HttpGetAttribute>("GetBudget");
-            Assert.True(httpGets.Any(a => a.Template == "{month:int}/{year:int}"));
-        }
-
-        [Fact]
-        public void GetBudget_ShouldAllowHttpGetWithoutMonthAndYear()
-        {
-            var httpGets = _budgetController.GetAttributes<HttpGetAttribute>("GetBudget");
-            Assert.True(httpGets.Any(a => a.Template == "current"));
+            Assert.True(httpGets.Any(a => a.Template == "{year:int}/{month:int}"));
         }
 
         [Fact]
@@ -160,7 +144,7 @@ namespace BudgetBuddy.Api.Test.Budgets
         public void UpdateBudget_ShouldAllowHttpPut()
         {
             var httpPut = _budgetController.GetAttribute<HttpPutAttribute>("UpdateBudget");
-            Assert.Equal("{month:int}/{year:int}", httpPut.Template);
+            Assert.Equal("{year:int}/{month:int}", httpPut.Template);
         }
 
         [Fact]
@@ -174,6 +158,13 @@ namespace BudgetBuddy.Api.Test.Budgets
                 .First();
 
             Assert.NotNull(fromBody);
+        }
+
+        [Fact]
+        public void CopyBudget_ShouldAllowHttpPost()
+        {
+            var httpPost = _budgetController.GetType().GetMethod("CopyBudget").GetCustomAttribute<HttpPostAttribute>();
+            Assert.Equal("copy", httpPost.Template);
         }
 
         private void AssertBudgetAdded(CreatedResult result, BudgetViewModel viewModel)

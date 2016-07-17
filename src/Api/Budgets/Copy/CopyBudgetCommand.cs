@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.General;
 using BudgetBuddy.Api.General.Storage;
 using BudgetBuddy.Infrastructure.DependencyInjection;
-using Hangfire.Common;
 
 namespace BudgetBuddy.Api.Budgets.Copy
 {
@@ -21,11 +19,6 @@ namespace BudgetBuddy.Api.Budgets.Copy
         public const string JobId = "budgets-copy-or-create-next";
         private readonly IRepository<Budget> _budgetRepository;
         private readonly IDateTimeService _dateTimeService;
-
-        public static Job CreateCopyJob()
-        {
-            return new Job(typeof(ICopyBudgetCommand), typeof(ICopyBudgetCommand).GetMethod("Execute"));
-        }
 
         public CopyBudgetCommand(IRepository<Budget> budgetRepository, IDateTimeService dateTimeService)
         {

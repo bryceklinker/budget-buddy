@@ -1,9 +1,7 @@
 ﻿using System.Reflection;
-using BudgetBuddy.Api.Budgets.Copy;
 using BudgetBuddy.Api.Telemetry;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
-using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +36,6 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             services.AddSingleton(typeof(IConfiguration), Configuration)
                 .AddCors(o => o.AddPolicy(CorsPolicyName, b => b.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()))
-                //.AddHangfire(g => g.UseSqlServerStorage(Configuration["Hangfire:ConnectionString"]))
                 .AddMvc();
             _dependencyRegistrar.Register(services);
         }
@@ -49,16 +46,7 @@ namespace BudgetBuddy.Api.Bootstrap
                 .UseCors(CorsPolicyName)
                 .UseFileServer("/client")
                 .UseDefaultFiles("/client")
-                //.UseHangfireDashboard()
-                //.UseHangfireServer(new BackgroundJobServerOptions
-                //{
-                //    Activator = new AspNetCoreJobActivator(app.ApplicationServices.GetService<IServiceScopeFactory>())
-                //})
                 .UseMvc();
-
-            var recurringManager = new RecurringJobManager();
-            recurringManager.AddOrUpdate(CopyBudgetCommand.JobId, CopyBudgetCommand.CreateCopyJob(), Cron.Monthly());
-            BackgroundJob.Enqueue<ICopyBudgetCommand>(command => command.Execute());
         }
 
         private IConfiguration CreateConfig()

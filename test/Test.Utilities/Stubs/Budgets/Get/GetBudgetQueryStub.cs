@@ -10,7 +10,7 @@ namespace BudgetBuddy.Test.Utilities.Stubs.Budgets.Get
         public int Year { get; private set; }
         public BudgetViewModel Result { get; set; }
 
-        public Task<BudgetViewModel> Execute(int month, int year)
+        public Task<BudgetViewModel> Execute(int year, int month)
         {
             Month = month;
             Year = year;

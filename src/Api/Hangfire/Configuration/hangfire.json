@@ -1,5 +1,0 @@
-﻿{
-  "Hangfire": {
-    "ConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Database=BudgetHangfire;Integrated Security=true;"
-  } 
-}

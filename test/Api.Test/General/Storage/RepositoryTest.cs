@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.General.Storage;
 using LiteDB;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 
@@ -19,7 +21,13 @@ namespace BudgetBuddy.Api.Test.General.Storage
         public RepositoryTest()
         {
             _connectionString = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".db");
-            _repository = new Repository<Budget>(_connectionString);
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(new[]
+            {
+                new KeyValuePair<string, string>("Budgets:ConnectionString", _connectionString)
+            });
+            var configuration = builder.Build();
+            _repository = new Repository<Budget>(configuration);
         }
 
         [Fact]

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Add;
+using BudgetBuddy.Api.Budgets.Copy;
 using BudgetBuddy.Api.Budgets.Exists;
 using BudgetBuddy.Api.Budgets.Get;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
 using BudgetBuddy.Api.Budgets.Update;
-using BudgetBuddy.Api.General;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetBuddy.Api.Budgets
@@ -13,34 +12,29 @@ namespace BudgetBuddy.Api.Budgets
     [Route("budgets")]
     public class BudgetController : Controller
     {
-        private readonly IDateTimeService _dateTimeService;
         private readonly IGetBudgetQuery _getBudgetQuery;
         private readonly IAddBudgetCommand _addBudgetCommand;
         private readonly IUpdateBudgetCommand _updateBudgetCommand;
         private readonly IBudgetExistsQuery _budgetExistsQuery;
+        private readonly ICopyBudgetCommand _copyBudgetCommand;
 
-        public BudgetController(IDateTimeService dateTimeService, IGetBudgetQuery getBudgetQuery, IAddBudgetCommand addBudgetCommand, IUpdateBudgetCommand updateBudgetCommand, IBudgetExistsQuery budgetExistsQuery)
+        public BudgetController(IGetBudgetQuery getBudgetQuery, IAddBudgetCommand addBudgetCommand, IUpdateBudgetCommand updateBudgetCommand, IBudgetExistsQuery budgetExistsQuery, ICopyBudgetCommand copyBudgetCommand)
         {
-            _dateTimeService = dateTimeService;
             _getBudgetQuery = getBudgetQuery;
             _addBudgetCommand = addBudgetCommand;
             _updateBudgetCommand = updateBudgetCommand;
             _budgetExistsQuery = budgetExistsQuery;
+            _copyBudgetCommand = copyBudgetCommand;
         }
 
-        [HttpGet("current")]
-        [HttpGet("{month:int}/{year:int}")]
-        public async Task<IActionResult> GetBudget(int? month = null, int? year = null)
+        [HttpGet("{year:int}/{month:int}")]
+        public async Task<IActionResult> GetBudget(int year, int month)
         {
-            var now = _dateTimeService.Now;
-            month = month ?? now.Month;
-            year = year ?? now.Year;
-
-            var exists = await _budgetExistsQuery.Execute(month.Value, year.Value);
+            var exists = await _budgetExistsQuery.Execute(month, year);
             if (!exists)
                 return NotFound();
 
-            var budget = await _getBudgetQuery.Execute(month.Value, year.Value);
+            var budget = await _getBudgetQuery.Execute(year, month);
             return Ok(budget);
         }
 
@@ -51,14 +45,21 @@ namespace BudgetBuddy.Api.Budgets
             return Created($"~/budgets/{viewModel.Month}/{viewModel.Year}", newId);
         }
 
-        [HttpPut("{month:int}/{year:int}")]
-        public async Task<IActionResult> UpdateBudget(int month, int year, [FromBody] BudgetViewModel viewModel)
+        [HttpPut("{year:int}/{month:int}")]
+        public async Task<IActionResult> UpdateBudget(int year, int month, [FromBody] BudgetViewModel viewModel)
         {
             var exists = await _budgetExistsQuery.Execute(month, year);
             if (!exists)
                 return NotFound();
 
             await _updateBudgetCommand.Execute(viewModel);
+            return Ok();
+        }
+
+        [HttpPost("copy")]
+        public async Task<IActionResult> CopyBudget()
+        {
+            await _copyBudgetCommand.Execute();
             return Ok();
         }
     }

@@ -142,7 +142,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
         [Fact]
         public async Task Execute_ShouldGetNull()
         {
-            var viewModel = await _getBudgetQuery.Execute(4, 2016);
+            var viewModel = await _getBudgetQuery.Execute(2016, 4);
             Assert.Null(viewModel);
         }
 
@@ -155,7 +155,7 @@ namespace BudgetBuddy.Api.Test.Budgets.Get
 
         private Task<BudgetViewModel> Execute()
         {
-            return _getBudgetQuery.Execute(_budget.StartDate.Month, _budget.StartDate.Year);
+            return _getBudgetQuery.Execute(_budget.StartDate.Year, _budget.StartDate.Month);
         }
     }
 }
