@@ -1,5 +1,5 @@
 ﻿{
   "Budgets": {
-    "ConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Database=BudgetBuddy;;Integrated Security=true;"
+    "ConnectionString": "C:\\Temp\\budget-buddy\\Budgets.db"
   } 
 }

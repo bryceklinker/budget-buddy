@@ -1,31 +1,41 @@
 import { Budget, Category, BudgetComponent } from './';
+import { CopyBudgetComponent } from './copy-budget.component';
 import { Config, ConfigService } from '../shared';
 
 describe('BudgetComponent', () => {
     let $httpBackend: angular.IHttpBackendService;
     let $http: angular.IHttpService;
     let $scope: angular.IScope;
+    let $stateParams: angular.ui.IStateParamsService;
+    let $uibModal: angular.ui.bootstrap.IModalService;
     let budget: Budget;
     let configService: ConfigService;
     let config: Config;
     let budgetComponent: BudgetComponent;
     let componentOptions: angular.IComponentOptions;
 
-    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _budgetDirective_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _$stateParams_, _$uibModal_, _budgetDirective_, _ConfigService_) => {
         $http = _$http_;
         $scope = _$rootScope_.$new();
         $httpBackend = _$httpBackend_;
+        $stateParams = _$stateParams_;
+        $uibModal = _$uibModal_;
 
         configService = _ConfigService_;
         config = { budgetApiUrl: 'http://google.com/api' };
         spyOn(configService, 'getConfig').and.returnValue(_$q_.resolve(config));
 
+        $stateParams['month'] = 3;
+        $stateParams['year'] = 2015;
         budget = { month: 3, year: 2015 };
-        $httpBackend.whenGET(`${config.budgetApiUrl}/budgets/current`)
+        $httpBackend.whenGET(`${config.budgetApiUrl}/budgets/${$stateParams['year']}/${$stateParams['month']}`)
             .respond(budget);
 
         componentOptions = _budgetDirective_[0];
-        budgetComponent = _$controller_(BudgetComponent);
+        budgetComponent = _$controller_(BudgetComponent, {
+            $stateParams: $stateParams, 
+            $uibModal: $uibModal
+        });
     }));
 
     it('should use budget component as controller', () => {
@@ -77,14 +87,27 @@ describe('BudgetComponent', () => {
         expect(budgetComponent.getCategoryHeading(budgetComponent.budget.categories[0])).toBe('New Category');
     });
 
-    it('should not save invalid budget', () => {
+    it('should ask to copy or create older budget', () => {
+        let modalInstance = $uibModal.open({
+            template: require('./templates/copy-budget.template')
+        });
+        spyOn($uibModal, 'open').and.returnValue(modalInstance);
+
+        $stateParams['year'] = 2016;
+        $stateParams['month'] = 6;
+        $httpBackend.expectGET(`${config.budgetApiUrl}/budgets/2016/6`)
+            .respond(404);
+
         budgetComponent.$onInit();
         $httpBackend.flush();
 
-        budgetComponent.save();
-        $scope.$digest();
-
-        $httpBackend.verifyNoOutstandingRequest();
+        expect($uibModal.open).toHaveBeenCalledWith({
+            backdrop: 'static',
+            keyboard: false,
+            controller: CopyBudgetComponent,
+            controllerAs: '$copy',
+            template: require('./templates/copy-budget.template')
+        })
     });
 
     function createCategories(): Category[] {

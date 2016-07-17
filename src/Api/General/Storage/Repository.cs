@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BudgetBuddy.Infrastructure.DependencyInjection;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 
@@ -13,6 +14,7 @@ namespace BudgetBuddy.Api.General.Storage
         Task Update(T item);
     }
 
+    [Transient(typeof(IRepository<>))]
     public class Repository<T> : IRepository<T> where T : IDocument, new()
     {
         private readonly string _connectionString;

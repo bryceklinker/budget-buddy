@@ -1,5 +1,0 @@
-﻿{
-  "Telemetry": {
-    "ConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Database=BudgetTelemetry;Integrated Security=true;"
-  }
-}

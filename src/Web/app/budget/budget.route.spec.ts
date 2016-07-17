@@ -8,7 +8,7 @@ describe('BudgetRoute', () => {
     }));
 
     it('should define url for budget', () => {
-        expect(budgetRoute.url).toBe('/budget');
+        expect(budgetRoute.url).toBe('/budgets/:year/:month');
     });
 
     it('should be first route', () => {
@@ -17,5 +17,5 @@ describe('BudgetRoute', () => {
 
     it('should use component as template', () => {
         expect(budgetRoute.template).toBe('<budget></budget>')
-    })
+    });
 })

@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h3 class="modal-title">Copy or create budget</h3>
+</div>
+
+<div class="modal-body">
+    <div class="form-group">
+        <span class="form-label">Copy budget from: {{ $ctrl.fromDate | date:'yyyy-MM-dd' }}</span>
+        <uib-datepicker ng-model="$copy.fromDate" />
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="col-sm-12 toolbar text-right">
+        <div class="btn-group ">
+            <button class="btn btn-primary" type="button" ng-click="$copy.copy()">
+                Copy Budget
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,10 +1,7 @@
-import { ValidationError } from './validation-error';
 import {
     Category,
     calculateCategoryEstimateTotal,
-    calculateCategoryActualTotal,
-    validateCategory,
-    isCategoryValid
+    calculateCategoryActualTotal
 } from './category';
 
 export interface Budget {
@@ -48,29 +45,4 @@ export function calculateBudgetActualBalance(budget: Budget): number {
         return 0;
 
     return budget.income - calculateBudgetActualTotal(budget);
-}
-
-export function validateBudget(budget: Budget): ValidationError[] {
-    const errors: ValidationError[] = [];
-    
-    if (!budget.income) 
-        errors.push({ text: 'Income is required.' });
-    
-    return errors;
-}
-
-export function isBudgetValid(budget: Budget): boolean {
-    const budgetErrors = validateBudget(budget);
-    if (budgetErrors.length > 0) 
-        return false;
-    
-    if (!budget.categories)
-        return true;
-
-    for (let i = 0; i < budget.categories.length; i++) {
-        if (!isCategoryValid(budget.categories[i]))
-            return false;
-    }
-
-    return budgetErrors.length === 0;
 }

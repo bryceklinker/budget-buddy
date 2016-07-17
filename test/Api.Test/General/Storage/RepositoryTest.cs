@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.General.Storage;
+using BudgetBuddy.Infrastructure.DependencyInjection;
+using BudgetBuddy.Test.Utilities;
 using LiteDB;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -58,6 +60,13 @@ namespace BudgetBuddy.Api.Test.General.Storage
 
             await _repository.Update(budget);
             AssertBudgetUpdated(budget, 45000);
+        }
+
+        [Fact]
+        public void Repository_ShouldBeTransient()
+        {
+            var transient = _repository.GetAttribute<TransientAttribute>();
+            Assert.Equal(typeof(IRepository<>), transient.InterfaceType);
         }
 
         public void Dispose()

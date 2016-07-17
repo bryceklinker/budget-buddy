@@ -1,7 +1,7 @@
 <div class="col-sm-12">
     <div class="row">
-        <div class="col-sm-6 form-group" ng-class="{'has-error': !$ctrl.category.name}">
-            <input type="text" ng-model="$ctrl.category.name" class="form-control" placeholder="Category" required>
+        <div class="col-sm-6 form-group">
+            <input type="text" ng-model="$ctrl.category.name" class="form-control" placeholder="Category">
         </div>
         <div class="col-sm-6 toolbar text-right">
             <div class="btn-group">
@@ -28,13 +28,13 @@
                 <tbody>
                     <tr ng-repeat="lineItem in $ctrl.category.lineItems">
                         <td>
-                            <div class="form-group" ng-class="{'has-error': !lineItem.name}">
-                                <input class="form-control" name="name" placeholder="Name" type="text" ng-model="lineItem.name" required />
+                            <div class="form-group">
+                                <input class="form-control" name="name" placeholder="Name" type="text" ng-model="lineItem.name" />
                             </div>
                         </td>
                         <td class="text-right">
-                            <div class="form-group" ng-class="{'has-error': !lineItem.estimate}">
-                                <input class="form-control text-right" placeholder="Estimate" type="number" ng-model="lineItem.estimate" required />
+                            <div class="form-group">
+                                <input class="form-control text-right" placeholder="Estimate" type="number" ng-model="lineItem.estimate" />
                             </div>
                         </td>
                         <td class="text-right">
