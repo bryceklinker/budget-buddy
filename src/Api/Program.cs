@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using BudgetBuddy.Api.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BudgetBuddy.Api
 {
@@ -13,25 +11,16 @@ namespace BudgetBuddy.Api
         {
             var builder = new WebHostBuilder()
                 .UseKestrel()
-
+                .UseContentRoot(BaseDirectory.GetBaseDirectory())
                 .UseStartup<Startup>();
 
-            if (IsDebugging())
-            {
-                builder = builder.UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseIISIntegration();
-            }
-            else
-            {
-                var exePath = Process.GetCurrentProcess().MainModule.FileName;
-                var directory = Path.GetDirectoryName(exePath);
-                builder = builder.UseContentRoot(directory)
-                    .UseUrls("http://+:8000");
-            }
+            builder = IsDebugging() 
+                ? builder.UseIISIntegration() 
+                : builder.UseUrls("http://+:8000");
 
             var host = builder.Build();
 
-            if (IsDebugging())
+            if (!IsDebugging())
                 host.RunAsService();
             else
                 host.Run();

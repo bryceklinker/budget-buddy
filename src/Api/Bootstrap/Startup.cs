@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using BudgetBuddy.Api.Telemetry;
 using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
@@ -51,7 +53,8 @@ namespace BudgetBuddy.Api.Bootstrap
 
         private IConfiguration CreateConfig()
         {
-            var builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(BaseDirectory.GetBaseDirectory());
             _configuratorLoader.Configure(builder);
             return builder
                 .AddEnvironmentVariables()
