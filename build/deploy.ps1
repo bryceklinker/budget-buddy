@@ -12,17 +12,6 @@ function Copy-Api
 	popd
 }
 
-function Copy-Client 
-{
-	pushd ".\src\Web\dist"
-	
-	Write-Host "Copying client files..."
-	Copy-Item ".\*" "$budgetBuddyDir\wwwroot" -Recurse -Force
-	Write-Host "Finished copying client files."
-		
-	popd
-}
-
 function Ensure-Budget-Buddy-Exists 
 {
 	if(Get-Service -Name $budgetBuddyServiceName -ErrorAction SilentlyContinue) {
@@ -54,5 +43,4 @@ function Start-Budget-Buddy
 
 Stop-Budget-Buddy
 Copy-Api
-Copy-Client
 Start-Budget-Buddy
