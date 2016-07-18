@@ -5,8 +5,8 @@ function Copy-Api
 {
 	pushd ".\src\Api\bin\Release\net461"
 
-	Write-Host "Coping Aai files..."
-	Copy-Item ".\*" $budgetBuddyDir
+	Write-Host "Coping api files..."
+	Copy-Item ".\*" $budgetBuddyDir -Recurse
 	Write-Host "Finished copying api files."
 
 	popd
@@ -17,7 +17,7 @@ function Copy-Client
 	pushd ".\src\Web\dist"
 	
 	Write-Host "Copying client files..."
-	Copy-Item ".\*" "$budgetBuddyDir/wwwroot"
+	Copy-Item ".\*" "$budgetBuddyDir/wwwroot" -Recurse
 	Write-Host "Finished copying client files."
 		
 	popd
@@ -26,10 +26,12 @@ function Copy-Client
 function Ensure-Budget-Buddy-Exists 
 {
 	if(Get-Service -Name $budgetBuddyServiceName -ErrorAction SilentlyContinue) {
-		Write-Host "Creating $budgetBuddyServiceName..."
-		New-Service -Name $budgetBuddyServiceName -BinaryPathName "$budgetBuddyDir\api.exe" -StartupType Automatic
-		Write-Host "Finished creating $budgetBuddyServiceName."
+		return;
 	}
+
+	Write-Host "Creating $budgetBuddyServiceName..."
+	New-Service -Name $budgetBuddyServiceName -BinaryPathName "$budgetBuddyDir\api.exe" -StartupType Automatic
+	Write-Host "Finished creating $budgetBuddyServiceName."
 }
 
 function Stop-Budget-Buddy
