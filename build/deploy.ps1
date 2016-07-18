@@ -3,7 +3,7 @@ $budgetBuddyServiceName = 'Budget-Buddy'
 
 function Copy-Api
 {
-	pushd ".\src\Api\bin\Release\net461"
+	pushd ".\src\Api\bin\Release\net461\win7-x64\publish"
 
 	Write-Host "Coping api files..."
 	Copy-Item ".\*" $budgetBuddyDir -Recurse
@@ -17,7 +17,7 @@ function Copy-Client
 	pushd ".\src\Web\dist"
 	
 	Write-Host "Copying client files..."
-	Copy-Item ".\*" "$budgetBuddyDir/wwwroot" -Recurse
+	Copy-Item ".\*" "$budgetBuddyDir\wwwroot" -Recurse
 	Write-Host "Finished copying client files."
 		
 	popd
@@ -30,7 +30,7 @@ function Ensure-Budget-Buddy-Exists
 	}
 
 	Write-Host "Creating $budgetBuddyServiceName..."
-	New-Service -Name $budgetBuddyServiceName -BinaryPathName "$budgetBuddyDir\api.exe" -StartupType Automatic
+	New-Service -Name $budgetBuddyServiceName -BinaryPathName "$budgetBuddyDir\Api.exe" -StartupType Automatic
 	Write-Host "Finished creating $budgetBuddyServiceName."
 }
 
