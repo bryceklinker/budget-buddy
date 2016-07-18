@@ -13,6 +13,7 @@ namespace BudgetBuddy.Api
         {
             var builder = new WebHostBuilder()
                 .UseKestrel()
+
                 .UseStartup<Startup>();
 
             if (IsDebugging())
@@ -30,8 +31,7 @@ namespace BudgetBuddy.Api
 
             var host = builder.Build();
 
-            var hostingEnvironment = host.Services.GetService<IHostingEnvironment>();
-            if (hostingEnvironment.IsProduction())
+            if (IsDebugging())
                 host.RunAsService();
             else
                 host.Run();
