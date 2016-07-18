@@ -23,7 +23,7 @@ function Copy-Client
 	popd
 }
 
-function Ensure-Service-Exists 
+function Ensure-Budget-Buddy-Exists 
 {
 	if(Get-Service -Name $budgetBuddyServiceName -ErrorAction SilentlyContinue) {
 		Write-Host "Creating $budgetBuddyServiceName..."
@@ -32,25 +32,25 @@ function Ensure-Service-Exists
 	}
 }
 
-function Stop-Service
+function Stop-Budget-Buddy
 {
-	Ensure-Service-Exists
+	Ensure-Budget-Buddy-Exists
 
 	Write-Host "Stopping service..."
-	Stop-Service $budgetBuddyServiceName
+	Stop-Service -Name $budgetBuddyServiceName
 	Write-Host "Finished stopping service."
 }
 
-function Start-Service
+function Start-Budget-Buddy
 {
-	Ensure-Service-Exists
+	Ensure-Budget-Buddy-Exists
 
 	Write-Host "Starting service..."
-	Start-Service $budgetBuddyServiceName
+	Start-Service -Name $budgetBuddyServiceName
 	Write-Host "Finished starting service."
 }
 
-Stop-Service
+Stop-Budget-Buddy
 Copy-Api
 Copy-Client
-Start-Service
+Start-Budget-Buddy
