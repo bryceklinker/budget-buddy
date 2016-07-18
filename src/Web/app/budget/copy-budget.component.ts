@@ -4,7 +4,7 @@ import { ConfigService } from '../shared';
 import { BudgetRoute } from './budget.route';
 
 export class CopyBudgetComponent implements angular.IComponentController {
-    static $inject = ['$http', '$state', '$stateParams', '$uibModalInstance', 'ConfigService']
+    static $inject = ['$http', '$state', '$stateParams', '$uibModalInstance', 'toastr', 'ConfigService']
 
     fromDate: Date;
     toDate: Date;
@@ -13,6 +13,7 @@ export class CopyBudgetComponent implements angular.IComponentController {
         private $state: angular.ui.IStateService,
         private $stateParams: angular.ui.IStateParamsService,
         private $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance,
+        private toastr: angular.toastr.IToastrService,
         private configService: ConfigService) {
 
     }
@@ -36,7 +37,8 @@ export class CopyBudgetComponent implements angular.IComponentController {
         this.configService.getConfig()
             .then(c => this.$http.post(`${c.budgetApiUrl}/budgets/copy`, copyOptions))
             .then(() => this.$state.go(BudgetRoute, { year: copyOptions.toYear, month: copyOptions.toMonth }, { reload: true }))
-            .then(() => this.$uibModalInstance.close());
+            .then(() => this.$uibModalInstance.close())
+            .then(() => this.toastr.success('Copied budget successfully.', 'Budget'));
     }
 
     create(): void {
@@ -46,6 +48,7 @@ export class CopyBudgetComponent implements angular.IComponentController {
         this.configService.getConfig()
             .then(c => this.$http.post(`${c.budgetApiUrl}/budgets`, { startDate: this.toDate }))
             .then(() => this.$state.go(BudgetRoute, { year: year, month: month}, { reload: true }))
-            .then(() => this.$uibModalInstance.close());
+            .then(() => this.$uibModalInstance.close())
+            .then(() => this.toastr.success('Created new budget successfully.', 'Budget'));
     }
 }

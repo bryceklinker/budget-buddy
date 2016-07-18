@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using LiteDB;
@@ -10,6 +11,7 @@ namespace BudgetBuddy.Api.General.Storage
     public interface IRepository<T> : IDisposable where T : IDocument, new()
     {
         Task<T[]> GetAll();
+        Task<T[]> Query(Expression<Func<T, bool>> filter);
         Task Insert(T item);
         Task Update(T item);
     }
@@ -32,6 +34,15 @@ namespace BudgetBuddy.Api.General.Storage
             {
                 var all = GetCollection(database).FindAll().ToArray();
                 return Task.FromResult(all);
+            }
+        }
+
+        public Task<T[]> Query(Expression<Func<T, bool>> filter)
+        {
+            using (var database = CreateDb())
+            {
+                var filtered = GetCollection(database).Find(filter).ToArray();
+                return Task.FromResult(filtered);
             }
         }
 

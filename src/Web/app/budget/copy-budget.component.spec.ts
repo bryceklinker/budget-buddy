@@ -7,12 +7,16 @@ describe('CopyBudgetComponent', () => {
     let $state: angular.ui.IStateService
     let $httpBackend: angular.IHttpBackendService;
     let $uibModalInstance: angular.ui.bootstrap.IModalServiceInstance;
+    let toastr: angular.toastr.IToastrService;
     let config: Config;
     let configService: ConfigService;
     let copyBudgetComponent: CopyBudgetComponent;
 
-    beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$state_, _$stateParams_, _$q_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$httpBackend_, _$state_, _$stateParams_, _$q_, _toastr_, _ConfigService_) => {
         $httpBackend = _$httpBackend_;
+
+        toastr = _toastr_;
+        spyOn(toastr, 'success').and.callThrough();
 
         $state = _$state_;
         spyOn($state, 'go').and.callFake(() => { });
@@ -62,6 +66,7 @@ describe('CopyBudgetComponent', () => {
             { reload: true }
         );
         expect($uibModalInstance.close).toHaveBeenCalled();
+        expect(toastr.success).toHaveBeenCalledWith('Copied budget successfully.', 'Budget');
     });
 
     it('should go to newly created budget', () => {
@@ -78,6 +83,7 @@ describe('CopyBudgetComponent', () => {
             { reload: true }
         );
         expect($uibModalInstance.close).toHaveBeenCalled();
+        expect(toastr.success).toHaveBeenCalledWith('Created new budget successfully.', 'Budget');
     });
 
     afterEach(() => {

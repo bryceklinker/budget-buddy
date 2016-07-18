@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Linq;
 using BudgetBuddy.Api.Budgets.Shared.Model.Entities;
 using BudgetBuddy.Api.Budgets.Shared.ViewModels;
@@ -24,10 +25,8 @@ namespace BudgetBuddy.Api.Budgets.Get
 
         public async Task<BudgetViewModel> Execute(int year, int month)
         {
-            var budgets = await _budgetRepository.GetAll();
+            var budgets = await _budgetRepository.Query(b => b.StartDate == new DateTime(year, month, 1));
             return budgets
-                .Where(b => b.StartDate.Month == month)
-                .Where(b => b.StartDate.Year == year)
                 .Select(b => new BudgetViewModel
                 {
                     Income = b.Income,

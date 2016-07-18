@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using BudgetBuddy.Api.General.Storage;
@@ -22,6 +24,11 @@ namespace BudgetBuddy.Test.Utilities.Stubs.General
         public Task<T[]> GetAll()
         {
             return Task.FromResult(Entities.ToArray());
+        }
+
+        public Task<T[]> Query(Expression<Func<T, bool>> filter)
+        {
+            return Task.FromResult(Entities.AsQueryable().Where(filter).ToArray());
         }
 
         public Task Insert(T item)

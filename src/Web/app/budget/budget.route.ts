@@ -14,7 +14,7 @@ angular.module('budget-buddy')
         ($stateProvider: angular.ui.IStateProvider, $urlRouterProvider: angular.ui.IUrlRouterProvider) => {
             const year = new Date().getFullYear();
             const month = new Date().getMonth() + 1;
-            var defaultRoute = BudgetRoute.url.toString().replace(':year', year).replace(':month', month);
+            var defaultRoute = BudgetRoute.url.toString().replace(<any>':year', <any>year).replace(<any>':month', <any>month);
             $urlRouterProvider.otherwise(defaultRoute);;
             $stateProvider.state(BudgetRoute);
         }

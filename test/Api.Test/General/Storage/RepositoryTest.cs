@@ -43,6 +43,18 @@ namespace BudgetBuddy.Api.Test.General.Storage
         }
 
         [Fact]
+        public async Task Query_ShouldFilterDocuments()
+        {
+            InsertBudget(new Budget {StartDate = new DateTime(2016, 5, 1)});
+            InsertBudget(new Budget {StartDate = new DateTime(2015, 5, 1)});
+            InsertBudget(new Budget {StartDate = new DateTime(2016, 6, 1)});
+            InsertBudget(new Budget {StartDate = new DateTime(2015, 6, 1)});
+
+            var actual = await _repository.Query(b => b.StartDate > new DateTime(2015, 7, 1));
+            Assert.Equal(2, actual.Length);
+        }
+
+        [Fact]
         public async Task Insert_ShouldAddDocumentToDatabase()
         {
             await _repository.Insert(new Budget());

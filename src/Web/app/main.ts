@@ -1,7 +1,7 @@
 const budgetBuddyModule = angular.module('budget-buddy', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'toastr']);
 budgetBuddyModule.config([
     'toastrConfig',
-    (toastrConfig: angular.toastr.IToastBaseConfig) =>{
+    (toastrConfig: angular.toastr.IToastConfig) =>{
         angular.extend(toastrConfig, {
             positionClass: 'toast-bottom-right'
         })
