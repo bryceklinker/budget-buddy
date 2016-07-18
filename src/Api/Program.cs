@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using BudgetBuddy.Api.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BudgetBuddy.Api
 {
@@ -15,7 +17,11 @@ namespace BudgetBuddy.Api
                 .UseStartup<Startup>()
                 .Build();
 
-            host.Run();
+            var hostingEnvironment = host.Services.GetService<IHostingEnvironment>();
+            if (hostingEnvironment.IsProduction())
+                host.RunAsService();
+            else
+                host.Run();
         }
     }
 }
