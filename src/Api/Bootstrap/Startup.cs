@@ -46,8 +46,8 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             app.UseMiddleware<TelemetryMiddleware>()
                 .UseCors(CorsPolicyName)
-                .UseFileServer("/wwwroot")
-                .UseDefaultFiles("/wwwroot")
+                .UseFileServer("wwwroot")
+                .UseDefaultFiles("wwwroot")
                 .UseMvc();
         }
 
