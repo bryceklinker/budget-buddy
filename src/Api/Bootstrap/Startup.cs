@@ -48,7 +48,7 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             app.UseMiddleware<TelemetryMiddleware>()
                 .UseCors(CorsPolicyName)
-                .UseFileServer()
+                .UseStaticFiles("/wwwroot")
                 .UseDefaultFiles(new DefaultFilesOptions
                 {
                     DefaultFileNames = new List<string> { "index.html" }
