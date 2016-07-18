@@ -6,7 +6,7 @@ function Copy-Api
 	pushd ".\src\Api\bin\Release\net461\win7-x64\publish"
 
 	Write-Host "Coping api files..."
-	Copy-Item ".\*" $budgetBuddyDir -Recurse
+	Copy-Item ".\*" $budgetBuddyDir -Recurse -Force
 	Write-Host "Finished copying api files."
 
 	popd
@@ -17,7 +17,7 @@ function Copy-Client
 	pushd ".\src\Web\dist"
 	
 	Write-Host "Copying client files..."
-	Copy-Item ".\*" "$budgetBuddyDir\wwwroot" -Recurse
+	Copy-Item ".\*" "$budgetBuddyDir\wwwroot" -Recurse -Force
 	Write-Host "Finished copying client files."
 		
 	popd
