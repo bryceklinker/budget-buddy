@@ -14,7 +14,7 @@ namespace BudgetBuddy.Api
                 .CaptureStartupErrors(true)
                 .UseEnvironment("Development")
                 .UseContentRoot(AppDirectory.Root)
-                .UseUrls("http://bryce-8:5000")
+                .UseUrls("http://bryce-8")
                 .UseStartup<Startup>()
                 .Build();
 
