@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using BudgetBuddy.Api.Telemetry;
 using BudgetBuddy.Infrastructure.Configuration;
@@ -28,7 +27,7 @@ namespace BudgetBuddy.Api.Bootstrap
 
         }
 
-        public Startup(IDependencyRegistrar dependencyRegistrar, IConfiguratorLoader configuratorLoader)
+        public Startup(IDependencyRegistrar dependencyRegistrar, IConfiguratorLoader configuratorLoader )
         {
             _dependencyRegistrar = dependencyRegistrar;
             _configuratorLoader = configuratorLoader;
@@ -53,6 +52,7 @@ namespace BudgetBuddy.Api.Bootstrap
 
         private IConfiguration CreateConfig()
         {
+            File.WriteAllText("budget-buddy.log.txt", Directory.GetCurrentDirectory());
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory());
             _configuratorLoader.Configure(builder);

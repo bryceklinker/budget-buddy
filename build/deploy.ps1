@@ -11,8 +11,5 @@ function Copy-Api
 	popd
 }
 
-Stop-Process -Name Api.exe
 
 Copy-Api
-
-Start-Process -FilePath "$budgetBuddyDir\Api.exe"
