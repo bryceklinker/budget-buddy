@@ -53,9 +53,9 @@ namespace BudgetBuddy.Api.Bootstrap
 
         private IConfiguration CreateConfig()
         {
-            File.WriteAllText("budget-buddy.log.txt", Directory.GetCurrentDirectory());
+            File.WriteAllText("budget-buddy.log.txt", AppDirectory.Root);
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory());
+                .SetBasePath(AppDirectory.Root);
             _configuratorLoader.Configure(builder);
             return builder
                 .AddEnvironmentVariables()

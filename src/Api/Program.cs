@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using BudgetBuddy.Api.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
@@ -14,7 +13,7 @@ namespace BudgetBuddy.Api
                 .UseKestrel()
                 .CaptureStartupErrors(true)
                 .UseEnvironment("Development")
-                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseContentRoot(AppDirectory.Root)
                 .UseStartup<Startup>()
                 .Build();
 
