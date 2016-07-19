@@ -43,7 +43,8 @@ namespace BudgetBuddy.Api.Bootstrap
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseMiddleware<TelemetryMiddleware>()
+            app.UseDeveloperExceptionPage()
+                .UseMiddleware<TelemetryMiddleware>()
                 .UseCors(CorsPolicyName)
                 .UseDefaultFiles()
                 .UseStaticFiles()
