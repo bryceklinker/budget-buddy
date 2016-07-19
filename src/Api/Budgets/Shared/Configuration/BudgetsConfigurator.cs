@@ -8,8 +8,7 @@ namespace BudgetBuddy.Api.Budgets.Shared.Configuration
     {
         public void Configure(IConfigurationBuilder builder)
         {
-            builder
-                .AddJsonFile(Path.Combine("Budgets", "Shared", "Configuration", "budgets.json"));
+            builder.AddJsonFile("budgets.json");
         }
     }
 }
