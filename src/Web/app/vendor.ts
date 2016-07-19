@@ -1,6 +1,7 @@
 import 'core-js';
 import 'jquery';
 import 'bootstrap-loader';
+import 'moment';
 
 import 'angular';
 import 'angular-ui-router';

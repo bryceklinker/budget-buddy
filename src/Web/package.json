@@ -9,7 +9,7 @@
     "test:single": "karma start --single-run",
     "prebuild": "rimraf ./dist",
     "build": "webpack --config ./webpack.release.js --progress --colors",
-    "start": "webpack-dev-server --config ./webpack.dev.js --progress --colors"
+    "start": "webpack-dev-server --config ./webpack.release.js --progress --colors"
   },
   "repository": {
     "type": "git",

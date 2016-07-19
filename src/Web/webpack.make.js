@@ -25,7 +25,10 @@ module.exports = function make(env) {
                 { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' }
             ]
         },
-        plugins: getPlugins(env)
+        plugins: getPlugins(env),
+        htmlLoader: {
+            collapseWhitespace: false
+        }
     };
 }
 
