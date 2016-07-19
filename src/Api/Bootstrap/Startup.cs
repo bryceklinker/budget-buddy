@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using BudgetBuddy.Api.Telemetry;
@@ -7,7 +6,6 @@ using BudgetBuddy.Infrastructure.Configuration;
 using BudgetBuddy.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -48,10 +46,7 @@ namespace BudgetBuddy.Api.Bootstrap
         {
             app.UseMiddleware<TelemetryMiddleware>()
                 .UseCors(CorsPolicyName)
-                .UseDefaultFiles(new DefaultFilesOptions
-                {
-                    DefaultFileNames = new List<string> { "index.html" }
-                })
+                .UseDefaultFiles()
                 .UseStaticFiles()
                 .UseMvc();
         }
@@ -59,7 +54,7 @@ namespace BudgetBuddy.Api.Bootstrap
         private IConfiguration CreateConfig()
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(BaseDirectory.GetBaseDirectory());
+                .SetBasePath(Directory.GetCurrentDirectory());
             _configuratorLoader.Configure(builder);
             return builder
                 .AddEnvironmentVariables()
