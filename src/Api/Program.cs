@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using BudgetBuddy.Api.Bootstrap;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace BudgetBuddy.Api
 {
@@ -8,8 +9,10 @@ namespace BudgetBuddy.Api
     {
         public static void Main(string[] args)
         {
+            var config = new ConfigurationBuilder().AddCommandLine(args).Build();
             var host = new WebHostBuilder()
                 .UseKestrel()
+                .UseConfiguration(config)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
