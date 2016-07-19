@@ -11,4 +11,6 @@ function Copy-Api
 	popd
 }
 
+Stop-WebSite -Name "Budget-Buddy"
 Copy-Api
+Start-WebSite -Name "Budget-Buddy"
