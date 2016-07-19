@@ -10,6 +10,7 @@ function Copy-Api
 
 	popd
 }
+add-pssnapin WebAdministration
 
 Stop-WebSite -Name "Budget-Buddy"
 Copy-Api
