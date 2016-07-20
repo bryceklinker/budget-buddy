@@ -1,4 +1,4 @@
-import { Budget, Category, BudgetComponent } from './';
+import { Budget, Category, BudgetComponent, BudgetRoute } from './';
 import { CopyBudgetComponent } from './copy-budget.component';
 import { Config, ConfigService } from '../shared';
 
@@ -8,6 +8,7 @@ describe('BudgetComponent', () => {
     let $scope: angular.IScope;
     let $stateParams: angular.ui.IStateParamsService;
     let $uibModal: angular.ui.bootstrap.IModalService;
+    let $state: angular.ui.IStateService;
     let toastr: angular.toastr.IToastrService;
     let budget: Budget;
     let configService: ConfigService;
@@ -15,10 +16,11 @@ describe('BudgetComponent', () => {
     let budgetComponent: BudgetComponent;
     let componentOptions: angular.IComponentOptions;
 
-    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _$stateParams_, _$uibModal_, _toastr_, _budgetDirective_, _ConfigService_) => {
+    beforeEach(angular.mock.inject((_$controller_, _$rootScope_, _$httpBackend_, _$http_, _$q_, _$state_, _$stateParams_, _$uibModal_, _toastr_, _budgetDirective_, _ConfigService_) => {
         $http = _$http_;
         $scope = _$rootScope_.$new();
         $httpBackend = _$httpBackend_;
+        $state = _$state_;
         $stateParams = _$stateParams_;
         $uibModal = _$uibModal_;
         toastr = _toastr_;
@@ -37,6 +39,7 @@ describe('BudgetComponent', () => {
         budgetComponent = _$controller_(BudgetComponent, {
             $stateParams: $stateParams, 
             $uibModal: $uibModal,
+            $state: $state,
             toastr: toastr
         });
     }));
@@ -125,6 +128,25 @@ describe('BudgetComponent', () => {
         $httpBackend.flush();
 
         expect(toastr.success).toHaveBeenCalledWith('Budget saved successfully', 'Budget');
+    });
+
+    it('should have budget date', () => {
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        expect(budgetComponent.startDate).toEqual(new Date(2015, 2, 1));
+    });
+
+    it('should go to specified budget', () => {
+        spyOn($state, 'go').and.callFake(() => {});
+        budgetComponent.$onInit();
+        $httpBackend.flush();
+
+        budgetComponent.startDate = new Date(2016, 5, 6);
+        expect($state.go).toHaveBeenCalledWith(BudgetRoute, {
+            month: 6,
+            year: 2016
+        }, { reload: true });
     });
 
     function createCategories(): Category[] {

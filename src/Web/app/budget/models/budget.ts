@@ -48,5 +48,8 @@ export function calculateBudgetActualBalance(budget: Budget): number {
 }
 
 export function calculatePercentOfIncome(amount: number, budget: Budget): number {
+    if (!budget)
+        return 0;
+    
     return (amount / budget.income) * 100;
 }

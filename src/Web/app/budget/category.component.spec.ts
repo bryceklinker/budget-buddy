@@ -100,4 +100,9 @@ describe('CategoryComponent', () => {
         const percentOfIncome = categoryComponent.calculatePercentOfIncome();
         expect(percentOfIncome).toBeCloseTo(58.85);
     });
+
+    it('should have 0 percent of income if no budget', () => {
+        categoryComponent.budget = undefined;
+        expect(categoryComponent.calculatePercentOfIncome()).toBe(0);
+    })
 })
