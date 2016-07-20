@@ -3,13 +3,18 @@ import { Category } from './';
 
 describe('CategoryComponent', () => {
     let categoryComponent: CategoryComponent;
-    let componentOptions: angular.IComponentOptions;
+    let componentOptions: angular.IDirective;
 
     beforeEach(angular.mock.inject((_$controller_, _categoryDirective_) => {
         componentOptions = _categoryDirective_[0];
         categoryComponent = _$controller_(CategoryComponent);
         categoryComponent.category = {};
     }));
+
+    it('should bind category and budget', () => {
+        expect(componentOptions.bindToController['budget']).toBe('=');
+        expect(componentOptions.bindToController['category']).toBe('=');
+    })
 
     it('should sum up line item estimates', () => {
         categoryComponent.category.lineItems = [
@@ -67,22 +72,32 @@ describe('CategoryComponent', () => {
         expect(categoryComponent.category.lineItems[0]).toEqual({});
     });
 
-    it('should be collapsed', () => {
-        categoryComponent.toggleCollapse();
-        expect(categoryComponent.isCollapsed).toBeTruthy();
-        expect(categoryComponent.collapseText).toBe('Expand');
-    });
-
-    it('should be expanded', () => {
-        expect(categoryComponent.isCollapsed).toBeFalsy();
-        expect(categoryComponent.collapseText).toBe('Collapse');
-    });
-
-    it('should expand after adding line item', () => {
-        categoryComponent.toggleCollapse();
-        expect(categoryComponent.isCollapsed).toBeTruthy();
-
+    it('should delete line item from category', () => {
         categoryComponent.addLineItem();
-        expect(categoryComponent.isCollapsed).toBeFalsy();
-    })
+        categoryComponent.addLineItem();
+        categoryComponent.addLineItem();
+
+        const deletedItem = categoryComponent.category.lineItems[1];
+        categoryComponent.deleteLineItem(deletedItem);
+        expect(categoryComponent.category.lineItems.indexOf(deletedItem)).toBe(-1);
+    });
+
+    it('should calculate percent of income for line item', () => {
+        categoryComponent.budget = { income: 100};
+
+        const lineItem = { actual: 45.3, estimate: 50 }
+        const percentOfIncome = categoryComponent.calculatePercentOfIncome(lineItem);
+        expect(percentOfIncome).toBeCloseTo(45.3);
+    });
+
+    it('should calculate percent of income for category', () => {
+        categoryComponent.budget = { income: 200 };
+        categoryComponent.category.lineItems = [
+            { actual: 45.2, estimate: 50 },
+            { actual: 72.5, estimate: 50 }
+        ];
+
+        const percentOfIncome = categoryComponent.calculatePercentOfIncome();
+        expect(percentOfIncome).toBeCloseTo(58.85);
+    });
 })

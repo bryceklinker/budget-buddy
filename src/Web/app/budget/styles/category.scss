@@ -1,3 +1,7 @@
 category {
     padding: 1em;
+
+    tbody > tr > td.vertical-middle {
+        vertical-align: middle;
+    }
 }

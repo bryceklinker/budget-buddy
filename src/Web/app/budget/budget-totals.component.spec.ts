@@ -95,6 +95,28 @@ describe('BudgetTotalsComponent', () => {
         expect(budgetTotalsComponent.actualBalance).toBe(0);
     });
 
+    it('should calculate percent of income', () => {
+        budgetTotalsComponent.budget = {
+            income: 1000,
+            categories: [
+                { 
+                    lineItems: [
+                        { actual: 500 }
+                    ]
+                },
+                {
+                    lineItems: [
+                        { actual: 100 },
+                        { actual: 200 }
+                    ]
+                }
+            ]
+        };
+
+        const percentOfIncome = budgetTotalsComponent.percentOfIncome;
+        expect(percentOfIncome).toBeCloseTo(80);
+    })
+
     function createCategories(): Category[] {
         return [
             {

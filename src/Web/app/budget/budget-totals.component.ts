@@ -3,7 +3,8 @@ import {
     calculateBudgetActualTotal, 
     calculateBudgetEstimateTotal, 
     calculateBudgetEstimateBalance, 
-    calculateBudgetActualBalance  
+    calculateBudgetActualBalance,
+    calculatePercentOfIncome
 } from './models';
 
 export class BudgetTotalsComponent implements angular.IComponentController {
@@ -23,6 +24,10 @@ export class BudgetTotalsComponent implements angular.IComponentController {
 
     get actualBalance(): number {
         return calculateBudgetActualBalance(this.budget);
+    }
+
+    get percentOfIncome(): number {
+        return calculatePercentOfIncome(this.actualTotal, this.budget);
     }
 
     $onInit(): void {

@@ -125,7 +125,7 @@ describe('BudgetComponent', () => {
         $httpBackend.flush();
 
         expect(toastr.success).toHaveBeenCalledWith('Budget saved successfully', 'Budget');
-    })
+    });
 
     function createCategories(): Category[] {
         return [

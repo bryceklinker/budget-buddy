@@ -8,20 +8,19 @@
                 <button class="btn btn-default" type="button" ng-click="$ctrl.addLineItem()">
                     Add Line Item
                 </button>
-                <button class="btn btn-default" type="button" ng-click="$ctrl.toggleCollapse()">
-                    {{$ctrl.collapseText}}
-                </button>
             </div>
         </div>
     </div>
 
-    <div class="row" uib-collapse="$ctrl.isCollapsed">
+    <div class="row">
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <td>Name</td>
-                    <td class="text-right">Estimate</td>
-                    <td class="text-right">Actual</td>
+                    <th>Name</th>
+                    <th class="text-right">Estimate</th>
+                    <th class="text-right">Actual</th>
+                    <th class="text-right">%&nbsp;Income</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +34,14 @@
                     <td class="text-right">
                         <input class="form-control text-right" placeholder="Actual" type="number" ng-model="lineItem.actual" />
                     </td>
+                    <td class="vertical-middle text-right">
+                        {{$ctrl.calculatePercentOfIncome(lineItem) | number:2}}
+                    </td>
+                    <td class="vertical-middle">
+                        <button class="btn btn-danger btn-sm" ng-click="$ctrl.deleteLineItem(lineItem)">
+                            <span class="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
             <tfoot>
@@ -45,6 +52,11 @@
                     </td>
                     <td class="text-right">
                         {{$ctrl.getActualTotal() | currency}}
+                    </td>
+                    <td class="vertical-middle text-right">
+                        {{$ctrl.calculatePercentOfIncome() | number:2 }}
+                    </td>
+                    <td>
                     </td>
                 </tr>
             </tfoot>
