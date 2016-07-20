@@ -1,4 +1,3 @@
-import 'core-js';
 import 'jquery';
 import 'bootstrap-loader';
 import 'moment';

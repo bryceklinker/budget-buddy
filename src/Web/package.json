@@ -9,7 +9,7 @@
     "test:single": "karma start --single-run",
     "prebuild": "rimraf ./dist",
     "build": "webpack --config ./webpack.release.js --progress --colors",
-    "start": "webpack-dev-server --config ./webpack.dev.js --progress --colors"
+    "start": "webpack-dev-server --config ./webpack.release.js --progress --colors"
   },
   "repository": {
     "type": "git",
@@ -29,7 +29,6 @@
     "angular-ui-router": "^0.3.1",
     "bootstrap-loader": "^1.0.10",
     "bootstrap-sass": "^3.3.6",
-    "core-js": "^2.4.0",
     "jquery": "^2.2.4",
     "moment": "^2.14.1"
   },

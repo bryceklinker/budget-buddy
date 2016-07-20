@@ -25,10 +25,7 @@ module.exports = function make(env) {
                 { test: /bootstrap-sass\/assets\/javascripts\//, loader: 'imports?jQuery=jquery' }
             ]
         },
-        plugins: getPlugins(env),
-        htmlLoader: {
-            collapseWhitespace: false
-        }
+        plugins: getPlugins(env)
     };
 }
 
@@ -71,9 +68,13 @@ function getPlugins(env) {
     );
 
     if (isRelease(env)) {
+        plugins.push(new webpack.optimize.UglifyJsPlugin({
+            output: {
+                ascii_only: true
+            }
+        }));
         plugins.push(new webpack.optimize.DedupePlugin());
         plugins.push(new webpack.optimize.OccurenceOrderPlugin());
-        plugins.push(new webpack.optimize.UglifyJsPlugin());
     }
     return plugins;
 }
